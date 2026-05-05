@@ -12,10 +12,10 @@ a { text-decoration: none; color: inherit; }
   --font-body:    'EB Garamond', Georgia, serif;
   --font-mono:    'JetBrains Mono', monospace;
 
-  --bg:           #0e0d14;
-  --bg-card:      #16151f;
-  --bg-card-h:    #1c1b28;
-  --surface:      #201e2e;
+  --bg:           #28272f;
+  --bg-card:      #32313c;
+  --bg-card-h:    #3a3946;
+  --surface:      #404050;
   --border:       rgba(255,255,255,.09);
   --border-h:     rgba(255,255,255,.22);
   --text:         #ece8dc;
