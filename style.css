@@ -758,3 +758,35 @@ header::after {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+.extra-btns {
+  display: flex;
+  gap: .5rem;
+  margin-top: .5rem;
+}
+
+/* ── Bouton Daily ── */
+.btn-daily {
+  flex: 1;
+  padding: .8rem 1rem;
+  background: linear-gradient(135deg, #1a3a6e, #2a5aaa);
+  color: #c8deff;
+  border: 1px solid #4878c8;
+  font-family: 'Cinzel', serif;
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .22s;
+  display: flex; align-items: center; justify-content: center; gap: .4rem;
+  box-shadow: 0 4px 18px rgba(40,90,180,.28);
+}
+.btn-daily:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 24px rgba(40,90,180,.4);
+  filter: brightness(1.1);
+}
+.btn-daily:disabled { opacity: .3; pointer-events: none; }
+
+.btn-rand-full { flex: 1; }
