@@ -10,39 +10,28 @@
 </head>
 <body>
 
-<!-- Theme toggle -->
 <button class="theme-toggle" id="themeBtn" aria-label="Changer de thème">☽</button>
 
-<!-- Header -->
 <header>
   <div class="header-ornament">✦ ✦ ✦</div>
   <h1>WikiTCG</h1>
   <p>Chaque article Wikipédia devient une carte</p>
 </header>
 
-<!-- Search UI -->
 <section class="ui" aria-label="Recherche">
   <div class="search-row">
     <div class="search-wrap">
       <span class="search-icon">⚔</span>
-      <input id="q" type="text" placeholder="Napoléon, Excalibur, Kraken, Paris…" autocomplete="off" spellcheck="false">
+      <input id="q" type="text" placeholder="Napoléon, Excalibur, Kraken…" autocomplete="off" spellcheck="false">
     </div>
     <button class="btn btn-invoke" id="bGen">Invoquer</button>
-    <button class="btn btn-rand" id="bRand" title="Article aléatoire">⚄</button>
   </div>
-  <div class="pills" role="list">
-    <button class="pill" role="listitem" onclick="go('Napoléon Bonaparte')">Napoléon</button>
-    <button class="pill" role="listitem" onclick="go('Excalibur')">Excalibur</button>
-    <button class="pill" role="listitem" onclick="go('Kraken')">Kraken</button>
-    <button class="pill" role="listitem" onclick="go('Merlin')">Merlin</button>
-    <button class="pill" role="listitem" onclick="go('Paris')">Paris</button>
-    <button class="pill" role="listitem" onclick="go('Atlantide')">Atlantide</button>
-    <button class="pill" role="listitem" onclick="go('Peste noire')">Peste noire</button>
-    <button class="pill" role="listitem" onclick="go('Albert Einstein')">Einstein</button>
+  <div class="extra-btns">
+    <button class="btn btn-daily" id="bDaily" title="Carte du jour">📅 Carte du jour</button>
+    <button class="btn btn-invoke btn-rand-full" id="bRand">⚄ Aléatoire</button>
   </div>
 </section>
 
-<!-- Loader -->
 <div id="loader" class="loader hidden" aria-live="polite">
   <div class="loader-inner">
     <div class="loader-rune">᛭</div>
@@ -51,13 +40,9 @@
   </div>
 </div>
 
-<!-- Error -->
 <div id="err" class="err hidden" role="alert"></div>
 
-<!-- Output zone -->
 <div id="out" class="card-zone hidden">
-
-  <!-- Mode switch -->
   <div class="mode-switch" role="tablist">
     <button class="mode-btn m-active" id="btnMTG" role="tab" onclick="switchMode('mtg')">
       <span class="mode-icon">⚔</span> Magic: the Gathering
@@ -67,7 +52,6 @@
     </button>
   </div>
 
-  <!-- ══ MAGIC CARD ══ -->
   <div id="view-mtg" role="tabpanel">
     <div class="mtg-card" id="mc">
       <div class="mtg-inner"></div>
@@ -96,7 +80,6 @@
     </div>
   </div>
 
-  <!-- ══ YGO CARD ══ -->
   <div id="view-ygo" class="hidden" role="tabpanel">
     <div class="ygo-card" id="yc">
       <div class="ygo-header">
