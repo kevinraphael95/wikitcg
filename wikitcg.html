@@ -4,111 +4,196 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WikiTCG</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg:#09090f; --panel:#0e0e1b; --border:#22223a;
-  --gold:#c9a84c; --gold2:#edd98a; --text:#e4dcc8; --sub:#5a5470; --dim:#1e1e30;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#c8a84b;--gold2:#f0d080;--sub:#5a5070;--border:#2a2040;--bg:#08080f}
+body{
+  background:var(--bg);color:#e8e0c8;font-family:'EB Garamond',Georgia,serif;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  padding:2rem 1rem 5rem;
+  background-image:radial-gradient(ellipse 70% 35% at 50% 0%,#14102a,transparent 65%);
 }
-body {
-  background:var(--bg); color:var(--text);
-  font-family:'EB Garamond',Georgia,serif;
-  min-height:100vh; display:flex; flex-direction:column; align-items:center;
-  padding:2.5rem 1rem 5rem; overflow-x:hidden;
+h1{
+  font-family:'Cinzel',serif;font-weight:900;
+  font-size:clamp(1.8rem,9vw,3.2rem);letter-spacing:.3em;
+  background:linear-gradient(150deg,#8b6914,var(--gold2) 40%,var(--gold),#8b6914);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-body::before {
-  content:''; position:fixed; inset:0;
-  background:radial-gradient(ellipse 80% 40% at 50% 0%,#1a1030 0%,transparent 60%);
-  pointer-events:none;
+header{text-align:center;margin-bottom:1.6rem}
+header p{font-style:italic;color:var(--sub);font-size:.9rem;margin-top:.3rem}
+
+/* SEARCH */
+.ui{width:100%;max-width:480px;margin-bottom:1.5rem}
+.search-row{display:flex;gap:.5rem;margin-bottom:.8rem}
+.search-row input{
+  flex:1;background:#0a0814;border:1px solid var(--border);border-radius:7px;
+  padding:.75rem 1rem;color:#e8e0c8;font-family:'EB Garamond',serif;font-size:1.05rem;outline:none;
+  transition:border-color .2s;
 }
-header { text-align:center; margin-bottom:2rem; animation:fadeDown .5s ease both; }
-h1 {
-  font-family:'Cinzel',serif; font-weight:900;
-  font-size:clamp(2rem,10vw,3.8rem); letter-spacing:.25em;
-  background:linear-gradient(150deg,var(--gold),var(--gold2) 50%,var(--gold));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-  line-height:1;
+.search-row input:focus{border-color:var(--gold)}
+.search-row input::placeholder{color:var(--sub)}
+.btn{
+  font-family:'Cinzel',serif;font-size:.65rem;font-weight:700;letter-spacing:.1em;
+  border-radius:7px;padding:.75rem 1.2rem;cursor:pointer;transition:all .2s;border:none;
+  background:linear-gradient(135deg,#5a3a08,var(--gold));color:#06040e;
 }
-header p { font-style:italic; color:var(--sub); font-size:1rem; margin-top:.5rem; }
-.search { width:100%; max-width:500px; display:flex; flex-direction:column; gap:.7rem; margin-bottom:1.2rem; animation:fadeDown .5s .1s ease both; }
-.search input {
-  width:100%; background:var(--panel); border:1px solid var(--border); border-radius:8px;
-  padding:.85rem 1.1rem; color:var(--text); font-family:'EB Garamond',serif;
-  font-size:1.1rem; outline:none; transition:border-color .2s;
+.btn:disabled{opacity:.3;pointer-events:none}
+.pills{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center}
+.pill{
+  background:transparent;border:1px solid var(--border);color:var(--sub);
+  font-family:'EB Garamond',serif;font-style:italic;font-size:.9rem;
+  padding:.25rem .9rem;border-radius:99px;cursor:pointer;transition:all .2s;
 }
-.search input:focus { border-color:var(--gold); }
-.search input::placeholder { color:var(--sub); }
-.search-btns { display:flex; gap:.6rem; }
-.btn {
-  flex:1; font-family:'Cinzel',serif; font-size:.7rem; font-weight:700;
-  letter-spacing:.12em; border-radius:8px; padding:.75rem .5rem;
-  cursor:pointer; transition:all .2s; border:none;
+.pill:hover{border-color:var(--gold);color:var(--gold2);background:rgba(200,168,75,.08)}
+
+/* LOADER / ERR */
+.loader{display:flex;flex-direction:column;align-items:center;gap:.8rem;padding:3rem}
+.dots{display:flex;gap:.35rem}
+.dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:bounce .7s infinite ease-in-out}
+.dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+.err{max-width:440px;text-align:center;padding:1rem;border-radius:6px;border:1px solid #3a0a0a;background:#0e0505;color:#cc4444;font-style:italic}
+.hidden{display:none!important}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* MODE SWITCH — affiché seulement quand une carte est là */
+.card-zone{display:flex;flex-direction:column;align-items:center;gap:.9rem;animation:fadeUp .4s ease}
+.mode-switch{
+  display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  width:min(340px,88vw);
 }
-.btn:disabled { opacity:.3; pointer-events:none; }
-.btn-gold { background:linear-gradient(135deg,#7a5010,var(--gold)); color:#07070d; }
-.btn-ghost { background:transparent; border:1px solid var(--border); color:var(--sub); }
-.btn-ghost:hover { border-color:var(--gold); color:var(--gold); }
-.pills {
-  display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center;
-  max-width:500px; margin-bottom:2.2rem; animation:fadeDown .5s .15s ease both;
+.mode-btn{
+  flex:1;padding:.65rem;cursor:pointer;border:none;
+  font-family:'Cinzel',serif;font-size:.62rem;font-weight:700;letter-spacing:.12em;
+  transition:all .22s;background:#0d0a1a;color:var(--sub);
 }
-.pill {
-  background:transparent; border:1px solid var(--border); color:var(--sub);
-  font-family:'EB Garamond',serif; font-style:italic; font-size:.95rem;
-  padding:.3rem 1rem; border-radius:99px; cursor:pointer; transition:all .2s;
+.mode-btn.m-active{background:linear-gradient(135deg,#4a2a04,#9a6810);color:#f0d060}
+.mode-btn.y-active{background:linear-gradient(135deg,#0a0a20,#181060);color:#90b0ff}
+.mode-btn:hover:not(.m-active):not(.y-active){color:var(--gold);background:#14101e}
+
+.wiki-link{
+  font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;
+  color:var(--sub);text-decoration:none;border:1px solid var(--border);
+  border-radius:6px;padding:.6rem 1rem;transition:all .2s;width:min(340px,88vw);
+  text-align:center;display:block;
 }
-.pill:hover { border-color:var(--gold); color:var(--gold2); background:rgba(201,168,76,.07); }
-.loader { display:flex; flex-direction:column; align-items:center; gap:1rem; padding:3rem; }
-.dots { display:flex; gap:.4rem; }
-.dot { width:7px; height:7px; background:var(--gold); border-radius:50%; animation:bounce .7s infinite ease-in-out; }
-.dot:nth-child(2) { animation-delay:.15s; }
-.dot:nth-child(3) { animation-delay:.3s; }
-.error-box {
-  max-width:460px; text-align:center; padding:1rem 1.25rem; border-radius:8px;
-  border:1px solid #3a1010; background:#110808; color:#cc4444; font-style:italic;
+.wiki-link:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ══════════════════════════════════════════
+   MAGIC CARD
+══════════════════════════════════════════ */
+.mtg-card{
+  width:min(340px,88vw);border-radius:17px;padding:10px;position:relative;
+  font-family:'EB Garamond',serif;
+  box-shadow:0 30px 80px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.05);
+  transition:transform .3s ease;
 }
-.card-wrap { display:flex; flex-direction:column; align-items:center; gap:1rem; animation:fadeUp .4s ease; }
-.card {
-  width:min(340px,88vw); border-radius:16px; padding:13px; position:relative;
-  transition:transform .4s ease; transform-style:preserve-3d;
+.mtg-card:hover{transform:rotateY(-4deg) rotateX(2deg) scale(1.015)}
+.mtg-card.W{background:linear-gradient(160deg,#f5f0e0,#e5dabc,#d0c290);border:2px solid #c0b060}
+.mtg-card.U{background:linear-gradient(160deg,#182f60,#0d2248,#0a1a38);border:2px solid #4070a8}
+.mtg-card.B{background:linear-gradient(160deg,#180e1e,#0d080e,#060408);border:2px solid #60408a}
+.mtg-card.R{background:linear-gradient(160deg,#681508,#501008,#380c06);border:2px solid #b03818}
+.mtg-card.G{background:linear-gradient(160deg,#0a3012,#072210,#051808);border:2px solid #286830}
+.mtg-card.A{background:linear-gradient(160deg,#282018,#1c1610,#121008);border:2px solid #807050}
+.mtg-card.M{background:linear-gradient(160deg,#38280a,#281808,#181005);border:2px solid #b08030}
+.mtg-inner{position:absolute;inset:6px;border-radius:13px;border:1px solid rgba(255,255,255,.13);pointer-events:none;z-index:0}
+.mtg-top{
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(0,0,0,.42);border-radius:8px 8px 0 0;
+  padding:5px 8px;margin-bottom:4px;position:relative;z-index:2;
+  border:1px solid rgba(255,255,255,.1);
 }
-@media(hover:hover){ .card:hover { transform:rotateY(-5deg) rotateX(3deg) scale(1.025); } }
-.card[data-t="creature"] { background:linear-gradient(155deg,#0f1a09,#0a1208); border:2px solid #3a7520; --a:#65c045; --f:#3a7520; box-shadow:0 0 40px rgba(58,117,32,.2),0 20px 60px rgba(0,0,0,.85); }
-.card[data-t="lieu"]     { background:linear-gradient(155deg,#08101c,#060d18); border:2px solid #1e4888; --a:#3d8de0; --f:#1e4888; box-shadow:0 0 40px rgba(30,72,136,.2),0 20px 60px rgba(0,0,0,.85); }
-.card[data-t="magie"]    { background:linear-gradient(155deg,#130a1c,#0f0816); border:2px solid #681c88; --a:#be45d5; --f:#681c88; box-shadow:0 0 40px rgba(104,28,136,.2),0 20px 60px rgba(0,0,0,.85); }
-.card[data-t="objet"]    { background:linear-gradient(155deg,#1c1106,#150d05); border:2px solid #7c4a0a; --a:#d0903a; --f:#7c4a0a; box-shadow:0 0 40px rgba(124,74,10,.2),0 20px 60px rgba(0,0,0,.85); }
-.card[data-t="evenement"]{ background:linear-gradient(155deg,#1c0808,#160606); border:2px solid #8c1e1e; --a:#d84040; --f:#8c1e1e; box-shadow:0 0 40px rgba(140,30,30,.2),0 20px 60px rgba(0,0,0,.85); }
-.card::after { content:''; position:absolute; inset:8px; border-radius:10px; border:1px solid var(--f); pointer-events:none; }
-.cc { position:absolute; width:16px; height:16px; border-color:var(--a); border-style:solid; opacity:.45; }
-.cc.tl { top:14px; left:14px; border-width:1px 0 0 1px; border-radius:2px 0 0 0; }
-.cc.tr { top:14px; right:14px; border-width:1px 1px 0 0; border-radius:0 2px 0 0; }
-.cc.bl { bottom:14px; left:14px; border-width:0 0 1px 1px; border-radius:0 0 0 2px; }
-.cc.br { bottom:14px; right:14px; border-width:0 1px 1px 0; border-radius:0 0 2px 0; }
-.c-head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px; position:relative; z-index:2; }
-.c-name { font-family:'Cinzel',serif; font-weight:900; font-size:clamp(.85rem,3.5vw,1.05rem); color:#f0e8d0; line-height:1.2; flex:1; }
-.c-mana { width:26px; height:26px; border-radius:50%; background:var(--f); border:2px solid var(--a); display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:.72rem; font-weight:900; color:var(--a); flex-shrink:0; }
-.c-art { width:100%; height:180px; border-radius:6px; border:2px solid var(--f); object-fit:cover; display:block; margin-bottom:10px; background:var(--dim); position:relative; z-index:2; }
-.c-art-ph { width:100%; height:180px; border-radius:6px; border:2px solid var(--f); margin-bottom:10px; background:linear-gradient(135deg,#111122,#080812); display:flex; align-items:center; justify-content:center; font-size:3rem; opacity:.5; position:relative; z-index:2; }
-.c-type { font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.18em; text-transform:uppercase; color:var(--a); border-top:1px solid var(--f); border-bottom:1px solid var(--f); padding:5px 2px; margin-bottom:10px; position:relative; z-index:2; }
-.c-text { font-size:.84rem; line-height:1.6; color:#bfb8a8; position:relative; z-index:2; min-height:70px; }
-.c-text .kw { font-weight:600; font-style:normal; color:var(--a); }
-.c-flavor { font-style:italic; color:var(--sub); font-size:.76rem; border-top:1px solid var(--f); margin-top:10px; padding-top:8px; position:relative; z-index:2; line-height:1.45; }
-.c-foot { display:flex; justify-content:space-between; align-items:flex-end; margin-top:14px; position:relative; z-index:2; }
-.c-set { font-family:'Cinzel',serif; font-size:.52rem; letter-spacing:.12em; color:var(--dim); }
-.c-pt { font-family:'Cinzel',serif; font-size:.9rem; font-weight:900; color:#f0e8d0; background:var(--f); border:1px solid var(--a); border-radius:4px; padding:3px 13px; }
-.card-actions { display:flex; gap:.6rem; width:min(340px,88vw); }
-.wiki-a {
-  display:inline-flex; align-items:center; gap:6px; flex:1; justify-content:center;
-  font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:.12em;
-  color:var(--sub); text-decoration:none; border:1px solid var(--border);
-  border-radius:8px; padding:.75rem; transition:all .2s;
+.mtg-name{font-family:'Cinzel',serif;font-weight:700;font-size:clamp(.7rem,3vw,.88rem);color:#f8f0d8;letter-spacing:.03em;flex:1}
+.mtg-mana{display:flex;gap:3px;align-items:center;flex-shrink:0}
+.msym{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;font-family:'Cinzel',serif;border:1.5px solid rgba(255,255,255,.3);flex-shrink:0}
+.msym.gen{background:radial-gradient(#888,#555);color:#fff}
+.msym.mW{background:radial-gradient(#fff8d0,#e8d870);color:#8a7820;border-color:#c8b858}
+.msym.mU{background:radial-gradient(#6090e0,#2050b0);color:#d0e8ff;border-color:#4070c0}
+.msym.mB{background:radial-gradient(#8040a0,#400870);color:#e0c0ff;border-color:#6030a0}
+.msym.mR{background:radial-gradient(#e05020,#a02010);color:#ffe0c0;border-color:#c04020}
+.msym.mG{background:radial-gradient(#30a040,#106020);color:#c0ffcc;border-color:#208030}
+.mtg-art-frame{width:100%;height:44%;border-radius:4px;border:3px solid rgba(255,255,255,.18);overflow:hidden;position:relative;z-index:2;margin-bottom:4px;background:#111}
+.mtg-art-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.mtg-art-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3.5rem;opacity:.35;background:linear-gradient(135deg,#1a1a2e,#0a0a18)}
+.mtg-type{
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(0,0,0,.42);padding:3px 8px;position:relative;z-index:2;
+  border:1px solid rgba(255,255,255,.1);margin-bottom:4px;
+  font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.08em;color:#d0c090;
 }
-.wiki-a:hover { border-color:var(--gold); color:var(--gold); }
-.hidden { display:none !important; }
-@keyframes fadeDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:none} }
-@keyframes fadeUp   { from{opacity:0;transform:translateY(16px)}  to{opacity:1;transform:none} }
-@keyframes bounce   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+.mtg-box{
+  background:rgba(238,228,198,.92);border-radius:0 0 4px 4px;
+  padding:6px 8px;position:relative;z-index:2;
+  border:1px solid rgba(255,255,255,.12);min-height:26%;display:flex;flex-direction:column;gap:2px;
+}
+.mtg-box.dk{background:rgba(18,10,28,.92)}
+.mtg-kw{font-size:clamp(.58rem,2vw,.72rem);font-weight:700;font-style:italic;color:#1a1208;line-height:1.4}
+.mtg-box.dk .mtg-kw{color:#d0c0f0}
+.mtg-ab{font-size:clamp(.58rem,2vw,.72rem);line-height:1.48;color:#1a1208}
+.mtg-box.dk .mtg-ab{color:#d0c0f0}
+.mtg-flav{font-style:italic;font-size:clamp(.53rem,1.8vw,.65rem);color:#5a4830;border-top:1px solid rgba(0,0,0,.18);padding-top:3px;margin-top:2px;line-height:1.38}
+.mtg-box.dk .mtg-flav{color:#9880b8;border-top-color:rgba(255,255,255,.13)}
+.mtg-foot{display:flex;justify-content:space-between;align-items:center;margin-top:4px;position:relative;z-index:2}
+.mtg-set{font-size:.46rem;font-family:'Cinzel',serif;letter-spacing:.1em;color:rgba(255,255,255,.28)}
+.mtg-pt{font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:2px 10px;color:#f8f0d8}
+.mtg-loy{font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#2050b0,#0a2878);border:2px solid #6090e0;color:#d0e8ff;display:flex;align-items:center;justify-content:center}
+
+/* ══════════════════════════════════════════
+   YU-GI-OH CARD
+══════════════════════════════════════════ */
+.ygo-card{
+  width:min(340px,88vw);border-radius:8px;position:relative;
+  font-family:'EB Garamond',serif;overflow:hidden;
+  box-shadow:0 0 0 2px #c8a030,0 0 0 4px #705010,0 30px 80px rgba(0,0,0,.9);
+  transition:transform .3s ease;
+}
+.ygo-card:hover{transform:rotateY(-4deg) rotateX(2deg) scale(1.015)}
+.ygo-card.normal  {background:linear-gradient(160deg,#d4a840,#b88020,#c09030)}
+.ygo-card.effect  {background:linear-gradient(160deg,#c06818,#a04810,#b05820)}
+.ygo-card.ritual  {background:linear-gradient(160deg,#2848a0,#1a3080,#203890)}
+.ygo-card.fusion  {background:linear-gradient(160deg,#7030a0,#501880,#602090)}
+.ygo-card.synchro {background:linear-gradient(160deg,#e8e0d0,#d0c8b8,#dcd4c0)}
+.ygo-card.xyz     {background:linear-gradient(160deg,#101018,#0a0a14,#080810)}
+.ygo-card.link    {background:linear-gradient(160deg,#182870,#101860,#143080)}
+.ygo-card.spell   {background:linear-gradient(160deg,#106840,#084828,#0c5834)}
+.ygo-card.trap    {background:linear-gradient(160deg,#901840,#680a28,#781430)}
+.ygo-header{
+  padding:6px 10px 5px;display:flex;justify-content:space-between;align-items:center;
+  background:rgba(0,0,0,.18);border-bottom:1px solid rgba(255,255,255,.13);
+}
+.ygo-name{font-family:'Cinzel',serif;font-weight:700;font-size:clamp(.72rem,3.5vw,.95rem);letter-spacing:.03em;flex:1;text-shadow:1px 1px 2px rgba(0,0,0,.55)}
+.ygo-card.synchro .ygo-name{color:#1a1008}
+.ygo-card.normal .ygo-name,.ygo-card.effect .ygo-name{color:#1a0c04}
+.ygo-card.ritual .ygo-name,.ygo-card.fusion .ygo-name,.ygo-card.xyz .ygo-name,.ygo-card.link .ygo-name,.ygo-card.spell .ygo-name,.ygo-card.trap .ygo-name{color:#f0e8c8}
+.ygo-attr{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;border:2px solid rgba(255,255,255,.38);background:rgba(0,0,0,.3);flex-shrink:0;margin-left:6px}
+.ygo-art-outer{margin:5px 8px;border:3px solid rgba(0,0,0,.48);background:#0a0a12;height:185px;overflow:hidden;position:relative}
+.ygo-card.synchro .ygo-art-outer{border-color:rgba(0,0,0,.28)}
+.ygo-art-outer img{width:100%;height:100%;object-fit:cover;display:block}
+.ygo-art-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;opacity:.42;background:linear-gradient(135deg,#0a0a1a,#050510)}
+.ygo-card.synchro .ygo-art-ph{background:linear-gradient(135deg,#d0c8b8,#b8b0a0)}
+.ygo-typeline{padding:3px 8px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,.18)}
+.ygo-stars{display:flex;gap:2px;align-items:center}
+.ygo-star{font-size:.8rem;color:#e8c020;text-shadow:0 0 4px rgba(232,192,32,.6)}
+.ygo-star.rk{color:#a0a0c0;text-shadow:0 0 4px rgba(160,160,192,.6)}
+.ygo-star.lk{font-family:'Cinzel',serif;font-size:.65rem;font-weight:700;color:#80b0ff;border:1px solid #4070d0;border-radius:4px;padding:1px 5px}
+.ygo-subtype{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.1em;font-style:italic;color:rgba(0,0,0,.65)}
+.ygo-card.xyz .ygo-subtype,.ygo-card.link .ygo-subtype,.ygo-card.ritual .ygo-subtype,.ygo-card.fusion .ygo-subtype,.ygo-card.spell .ygo-subtype,.ygo-card.trap .ygo-subtype{color:rgba(255,255,255,.55)}
+.ygo-textbox{margin:4px 8px 5px;background:rgba(255,252,240,.88);border:1px solid rgba(0,0,0,.28);border-radius:2px;padding:5px 7px;min-height:85px}
+.ygo-card.xyz .ygo-textbox,.ygo-card.link .ygo-textbox{background:rgba(18,14,28,.88)}
+.ygo-bracket{font-size:.6rem;color:#2a1a08;font-style:italic;margin-bottom:2px;line-height:1.3}
+.ygo-card.xyz .ygo-bracket,.ygo-card.link .ygo-bracket{color:#c0b8d8}
+.ygo-eff{font-size:.63rem;line-height:1.5;color:#1a0e04}
+.ygo-card.xyz .ygo-eff,.ygo-card.link .ygo-eff{color:#d8cce8}
+.ygo-flav{font-style:italic;font-size:.6rem;line-height:1.42;color:#2a1a08}
+.ygo-card.xyz .ygo-flav,.ygo-card.link .ygo-flav{color:#b0a8c8}
+.ygo-stats{display:flex;justify-content:flex-end;gap:10px;padding:3px 10px 5px;font-family:'Cinzel',serif}
+.ygo-stat{font-size:.7rem;font-weight:700;letter-spacing:.04em;color:rgba(0,0,0,.72)}
+.ygo-card.xyz .ygo-stat,.ygo-card.link .ygo-stat{color:rgba(255,255,255,.68)}
+.ygo-stat span{font-size:.78rem}
+.ygo-card.xyz .ygo-stat span,.ygo-card.link .ygo-stat span{color:#d0d8ff}
+.ygo-foot{padding:2px 8px 5px;display:flex;justify-content:space-between;align-items:center;font-size:.4rem;font-family:'Cinzel',serif;letter-spacing:.08em;color:rgba(0,0,0,.48)}
+.ygo-card.xyz .ygo-foot,.ygo-card.link .ygo-foot{color:rgba(255,255,255,.28)}
 </style>
 </head>
 <body>
@@ -118,246 +203,374 @@ header p { font-style:italic; color:var(--sub); font-size:1rem; margin-top:.5rem
   <p>Chaque article Wikipédia devient une carte</p>
 </header>
 
-<div class="search">
-  <input id="q" type="text" placeholder="Napoléon, Kraken, Excalibur, Paris…" autocomplete="off">
-  <div class="search-btns">
-    <button class="btn btn-ghost" id="bRand">⚄ Aléatoire</button>
-    <button class="btn btn-gold"  id="bGen">Générer</button>
+<div class="ui">
+  <div class="search-row">
+    <input id="q" type="text" placeholder="Napoléon, Excalibur, Kraken, Paris…" autocomplete="off">
+    <button class="btn" id="bGen">Invoquer</button>
   </div>
-</div>
-
-<div class="pills">
-  <button class="pill" onclick="runSearch('Napoléon Bonaparte')">Napoléon</button>
-  <button class="pill" onclick="runSearch('Paris')">Paris</button>
-  <button class="pill" onclick="runSearch('Excalibur')">Excalibur</button>
-  <button class="pill" onclick="runSearch('Kraken')">Kraken</button>
-  <button class="pill" onclick="runSearch('Jeanne d\'Arc')">Jeanne d'Arc</button>
-  <button class="pill" onclick="runSearch('Peste noire')">Peste noire</button>
-  <button class="pill" onclick="runSearch('Mont Everest')">Everest</button>
-  <button class="pill" onclick="runSearch('Albert Einstein')">Einstein</button>
+  <div class="pills">
+    <button class="pill" onclick="go('Napoléon Bonaparte')">Napoléon</button>
+    <button class="pill" onclick="go('Excalibur')">Excalibur</button>
+    <button class="pill" onclick="go('Kraken')">Kraken</button>
+    <button class="pill" onclick="go('Merlin')">Merlin</button>
+    <button class="pill" onclick="go('Paris')">Paris</button>
+    <button class="pill" onclick="go('Atlantide')">Atlantide</button>
+    <button class="pill" onclick="go('Peste noire')">Peste noire</button>
+    <button class="pill" onclick="go('Albert Einstein')">Einstein</button>
+  </div>
 </div>
 
 <div id="loader" class="loader hidden">
   <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-  <p style="color:var(--sub);font-size:.75rem;letter-spacing:.1em;font-style:italic">Consultation des archives…</p>
+  <p style="color:var(--sub);font-size:.7rem;letter-spacing:.1em;font-style:italic">Consultation des archives…</p>
 </div>
+<div id="err" class="err hidden"></div>
 
-<div id="errBox" class="error-box hidden"></div>
+<div id="out" class="card-zone hidden">
+  <!-- Mode switch -->
+  <div class="mode-switch">
+    <button class="mode-btn m-active" id="btnMTG" onclick="switchMode('mtg')">⚔ Magic: the Gathering</button>
+    <button class="mode-btn" id="btnYGO" onclick="switchMode('ygo')">★ Yu-Gi-Oh!</button>
+  </div>
 
-<div id="cardWrap" class="card-wrap hidden">
-  <div class="card" id="card">
-    <div class="cc tl"></div><div class="cc tr"></div>
-    <div class="cc bl"></div><div class="cc br"></div>
-    <div class="c-head">
-      <div class="c-name" id="cName"></div>
-      <div class="c-mana" id="cMana"></div>
-    </div>
-    <img  class="c-art"    id="cImg" src="" alt="">
-    <div  class="c-art-ph" id="cPh"></div>
-    <div  class="c-type"   id="cType"></div>
-    <div  class="c-text"   id="cText"></div>
-    <div  class="c-flavor" id="cFlavor"></div>
-    <div  class="c-foot">
-      <span class="c-set">WIKITCG • ÉDITION PREMIÈRE</span>
-      <span class="c-pt"  id="cPT"></span>
+  <!-- MAGIC CARD -->
+  <div id="view-mtg">
+    <div class="mtg-card" id="mc">
+      <div class="mtg-inner"></div>
+      <div class="mtg-top">
+        <div class="mtg-name" id="mc-name"></div>
+        <div class="mtg-mana" id="mc-mana"></div>
+      </div>
+      <div class="mtg-art-frame">
+        <img id="mc-img" src="" alt="">
+        <div class="mtg-art-ph" id="mc-ph"></div>
+      </div>
+      <div class="mtg-type">
+        <span id="mc-typetxt"></span>
+        <span id="mc-rarity"></span>
+      </div>
+      <div class="mtg-box" id="mc-box">
+        <div class="mtg-kw" id="mc-kw"></div>
+        <div class="mtg-ab" id="mc-ab"></div>
+        <div class="mtg-flav" id="mc-flav"></div>
+      </div>
+      <div class="mtg-foot">
+        <span class="mtg-set">WIKITCG • FR</span>
+        <span class="mtg-pt" id="mc-pt" style="display:none"></span>
+        <span class="mtg-loy" id="mc-loy" style="display:none"></span>
+      </div>
     </div>
   </div>
-  <div class="card-actions">
-    <button class="btn btn-gold" style="flex:1" onclick="runRandom()">⚄ Autre carte</button>
-    <a class="wiki-a" id="cWiki" href="#" target="_blank" rel="noopener">↗ Wikipédia</a>
+
+  <!-- YGO CARD -->
+  <div id="view-ygo" class="hidden">
+    <div class="ygo-card" id="yc">
+      <div class="ygo-header">
+        <div class="ygo-name" id="yc-name"></div>
+        <div class="ygo-attr" id="yc-attr"></div>
+      </div>
+      <div class="ygo-art-outer">
+        <img id="yc-img" src="" alt="">
+        <div class="ygo-art-ph" id="yc-ph"></div>
+      </div>
+      <div class="ygo-typeline">
+        <div class="ygo-stars" id="yc-stars"></div>
+        <div class="ygo-subtype" id="yc-subtype"></div>
+      </div>
+      <div class="ygo-textbox" id="yc-box">
+        <div class="ygo-bracket" id="yc-bracket"></div>
+        <div class="ygo-eff" id="yc-eff"></div>
+        <div class="ygo-flav" id="yc-flav"></div>
+      </div>
+      <div class="ygo-stats" id="yc-stats"></div>
+      <div class="ygo-foot">
+        <span>WIKITCG-001</span>
+        <span id="yc-serial"></span>
+      </div>
+    </div>
   </div>
+
+  <a class="wiki-link" id="wikiLink" href="#" target="_blank" rel="noopener">↗ Article Wikipédia</a>
 </div>
 
 <script>
-const LANG = 'fr';
-const API  = `https://${LANG}.wikipedia.org/api/rest_v1`;
+// ── Utilitaires déterministes ──
+function hash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h)+s.charCodeAt(i)|0;return Math.abs(h)}
+function range(a,b,s){return a+s%(b-a+1)}
+function pick(a,s){return a[s%a.length]}
 
-function guessType(data) {
-  const text = ((data.description || '') + ' ' + (data.extract || '')).toLowerCase();
-  if (/bataille|guerre|révolution|siège|conquête|épidémie|catastrophe|tremblement|inondation|éruption|attentat|assassinat/.test(text)) return 'evenement';
-  if (/ville|pays|mont|île|mer|lac|fleuve|forêt|désert|continent|région|province|territoire|océan|golfe|cap|plaine|vallée|massif/.test(text)) return 'lieu';
-  if (/épée|bouclier|armure|artefact|relique|talisman|anneau|couronne|bâton|baguette|lance|arc|flèche|calice|grimoire/.test(text)) return 'objet';
-  if (/sort|magie|enchantement|rituel|alchimie|sorcellerie|prophétie|malédiction|rune/.test(text)) return 'magie';
-  if (/animal|bête|monstre|créature|dragon|démon|dieu|esprit|être|insecte|oiseau|mammifère|reptile|poisson/.test(text)) return 'creature';
-  return 'creature';
+// ── Wikipedia ──
+async function fetchWiki(title){
+  const r=await fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.trim().replace(/ /g,'_'))}`);
+  if(!r.ok)throw new Error(`Article introuvable : « ${title} »`);
+  return r.json();
 }
 
-function guessSubtype(data, type) {
-  const all = ((data.description || '') + ' ' + (data.extract || '')).toLowerCase();
-  if (type === 'creature') {
-    if (/général|militaire|maréchal|amiral|commandant/.test(all)) return 'Guerrier Légendaire';
-    if (/roi|reine|emperor|impératrice|pharaon|sultan|prince/.test(all)) return 'Noble Légendaire';
-    if (/philosophe|penseur|théoricien/.test(all)) return 'Sage Légendaire';
-    if (/scientifique|physicien|mathématicien|biologiste|chimiste/.test(all)) return 'Mage Savant';
-    if (/artiste|peintre|sculpteur|musicien|compositeur/.test(all)) return 'Barde Légendaire';
-    if (/monstre|dragon|démon|titan|géant/.test(all)) return 'Monstre';
-    if (/dieu|déesse|divinité/.test(all)) return 'Divinité';
-    return 'Humain Légendaire';
+// ══════════════ MAGIC ══════════════
+function mtgColor(d,h){
+  const t=((d.description||'')+(d.extract||'')).toLowerCase();
+  if(/lumière|paix|divin|saint|église|loi|justice|ordre|noble|paladin|roi|reine/.test(t))return'W';
+  if(/mer|océan|science|physique|mathématique|invention|magie|illusion|philosophie|technologie/.test(t))return'U';
+  if(/mort|poison|maladie|épidémie|ombre|nécromant|démon|corruption|trahison|assassinat|peste/.test(t))return'B';
+  if(/guerre|bataille|feu|volcan|révolution|chaos|dragon|combat/.test(t))return'R';
+  if(/forêt|nature|animal|plante|bête|croissance|jungle|arbre/.test(t))return'G';
+  return pick(['W','U','B','R','G'],h);
+}
+function mtgCardType(d,h){
+  const t=((d.description||'')+(d.extract||'')).toLowerCase();
+  if(/ville|cité|capitale|pays|île|mer|océan|lac|fleuve|mont|forêt|désert|région/.test(t))return{type:'Land',sub:'',isLand:true};
+  if(/épée|bouclier|armure|anneau|couronne|bâton|lance|arc|calice|grimoire|relique|talisman/.test(t))return{type:'Artifact',sub:'Equipment',isLand:false};
+  if(/sort|enchantement|alchimie|sorcellerie|malédiction|rune/.test(t))return{type:'Enchantment',sub:'Saga',isLand:false};
+  if(/bataille|guerre|révolution|épidémie|catastrophe|tremblement|éruption|attentat/.test(t))return{type:pick(['Instant','Sorcery'],h),sub:'',isLand:false};
+  if(/général|conquistador|pharaon|sorcier|archimage|dieu|déesse/.test(t)&&h%7===0)return{type:'Planeswalker',sub:'',isLand:false};
+  let sub='Human';
+  if(/dragon/.test(t))sub='Dragon';
+  else if(/monstre|bête|animal/.test(t))sub='Beast';
+  else if(/démon/.test(t))sub='Demon';
+  else if(/esprit|fantôme/.test(t))sub='Spirit';
+  else if(/vampire/.test(t))sub='Vampire';
+  else if(/général|soldat|guerrier/.test(t))sub='Human Soldier';
+  else if(/scientifique|inventeur|philosophe/.test(t))sub='Human Wizard';
+  else if(/roi|reine|noble/.test(t))sub='Human Noble';
+  else if(/prêtre|moine|saint/.test(t))sub='Human Cleric';
+  return{type:'Creature',sub,isLand:false};
+}
+function mtgSupertype(d){
+  const t=((d.description||'')+(d.extract||'')).toLowerCase();
+  if(/né le|né en|général|roi|reine|philosophe|scientifique|artiste|inventeur|île|mont|ville|épée|anneau|grimoire/.test(t))return'Legendary';
+  return'';
+}
+function mtgKeywords(color,ct,h){
+  const k={W:['Flying','Vigilance','Lifelink','First Strike','Protection'],U:['Flying','Hexproof','Flash','Prowess','Islandwalk'],B:['Deathtouch','Lifelink','Menace','Shadow','Intimidate'],R:['Haste','Trample','First Strike','Firebreathing'],G:['Trample','Reach','Vigilance','Forestwalk','Regenerate'],A:['Defender','Indestructible','Hexproof'],M:['Flying','Trample','Lifelink','Hexproof']};
+  if(ct.type!=='Creature')return[];
+  const list=k[color]||k.A;
+  return[...new Set([list[h%list.length],list[(h+3)%list.length]])];
+}
+function mtgAbility(d,color,ct,h){
+  const sents=((d.extract||'').match(/[^.!?]+[.!?]+/g)||[d.extract||'']).filter(s=>s.trim().length>20);
+  const s=sents[h%sents.length]||'';
+  if(ct.isLand)return`{T}: Ajoutez {${color}} à votre réserve de mana.`;
+  if(ct.type==='Artifact'&&ct.sub==='Equipment')return`Équipement — La créature équipée gagne +${range(1,3,h)}/+${range(0,2,h+1)}.\nÉquiper {${range(1,4,h+2)}}`;
+  if(ct.type==='Enchantment')return`I, II — Chaque adversaire sacrifie une créature.\nIII — ${s.trim().slice(0,80)}`;
+  if(ct.type==='Planeswalker')return`+1 : ${s.trim().slice(0,55)}\n−2 : Piochez deux cartes.\n−7 : ${s.trim().slice(0,55)}`;
+  return s.trim().slice(0,150);
+}
+function mtgPT(d,ct,h){
+  if(ct.type!=='Creature')return null;
+  const t=(d.extract||'').toLowerCase();
+  const mil=/armée|guerrier|bataille|conquête|général/.test(t);
+  const int=/scientifique|inventeur|mathématicien|philosophe/.test(t);
+  const beast=/monstre|dragon|bête|démon/.test(t);
+  const b=range(1,5,h);
+  if(beast)return{p:b+2,t:b+1};
+  if(mil)return{p:b+1,t:b};
+  if(int)return{p:1,t:b+2};
+  return{p:b,t:b};
+}
+function mtgMana(color,ct,d,h){
+  if(ct.isLand)return[];
+  const wc=(d.extract||'').split(/\s+/).length;
+  const g=Math.min(8,Math.max(1,Math.round(wc/70)));
+  const syms=[];
+  if(g>1)syms.push({n:g-1,cls:'gen'});
+  syms.push({n:null,cls:'m'+color});
+  return syms;
+}
+function mtgRarity(h){const r=h%20;if(r<10)return'◆';if(r<16)return'◆◆';if(r<19)return'◆◆◆';return'★'}
+function mtgFlavor(d,h){
+  const desc=d.description||'';
+  if(desc.length>12&&desc.length<72)return desc;
+  const sents=((d.extract||'').match(/[^.!?]+[.!?]+/g)||[]).filter(s=>s.trim().length>15&&s.trim().length<75);
+  return sents.length?sents[h%sents.length].trim():'';
+}
+function buildMTG(d){
+  const h=hash(d.title||'X');
+  const color=mtgColor(d,h);
+  const ct=mtgCardType(d,h);
+  const sup=mtgSupertype(d);
+  const kws=mtgKeywords(color,ct,h);
+  const ab=mtgAbility(d,color,ct,h+1);
+  const pt=mtgPT(d,ct,h+2);
+  const loy=ct.type==='Planeswalker'?range(3,5,h):null;
+  const mana=mtgMana(color,ct,d,h+3);
+  let typeStr=(sup?sup+' ':'')+ct.type+(ct.sub?' — '+ct.sub:'');
+  return{name:(d.title||'').slice(0,26),color,ct,kws,ab,pt,loy,mana,rarity:mtgRarity(h),typeStr,flavor:mtgFlavor(d,h+4),dark:['U','B','R','G','M'].includes(color),image:d.thumbnail?.source||null,url:d.content_urls?.desktop?.page||'#',emoji:{W:'☀️',U:'💧',B:'💀',R:'🔥',G:'🌿',A:'💎',M:'🌈'}[color]||'🐉'};
+}
+function renderMTG(c){
+  const mc=document.getElementById('mc');
+  mc.className='mtg-card '+c.color;
+  document.getElementById('mc-name').textContent=c.name;
+  document.getElementById('mc-typetxt').textContent=c.typeStr;
+  document.getElementById('mc-rarity').textContent=c.rarity;
+  const manaEl=document.getElementById('mc-mana');manaEl.innerHTML='';
+  c.mana.forEach(m=>{const s=document.createElement('div');s.className='msym '+m.cls;const lbl={gen:m.n,mW:'W',mU:'U',mB:'B',mR:'R',mG:'G'};s.textContent=lbl[m.cls]??m.n;manaEl.appendChild(s)});
+  const box=document.getElementById('mc-box');box.className='mtg-box'+(c.dark?' dk':'');
+  document.getElementById('mc-kw').innerHTML=c.kws.length&&c.ct.type==='Creature'?c.kws.join(', '):'';
+  document.getElementById('mc-ab').innerHTML=c.ab.split('\n').map(l=>`<div>${l}</div>`).join('');
+  document.getElementById('mc-flav').textContent=c.flavor?`« ${c.flavor} »`:'';
+  const img=document.getElementById('mc-img'),ph=document.getElementById('mc-ph');
+  if(c.image){img.src=c.image;img.style.display='block';ph.style.display='none';img.onerror=()=>{img.style.display='none';ph.textContent=c.emoji;ph.style.display='flex'}}
+  else{img.style.display='none';ph.textContent=c.emoji;ph.style.display='flex'}
+  const pt=document.getElementById('mc-pt'),loy=document.getElementById('mc-loy');
+  if(c.pt){pt.textContent=`${c.pt.p}/${c.pt.t}`;pt.style.display='block';loy.style.display='none'}
+  else if(c.loy!==null){loy.textContent=c.loy;loy.style.display='flex';pt.style.display='none'}
+  else{pt.style.display='none';loy.style.display='none'}
+}
+
+// ══════════════ YU-GI-OH ══════════════
+const ATTRS={DARK:'🌑',LIGHT:'☀️',FIRE:'🔥',WATER:'💧',EARTH:'🌍',WIND:'💨',DIVINE:'✨'};
+const YGO_LABELS={normal:'Normal Monster',effect:'Effect Monster',ritual:'Ritual Monster',fusion:'Fusion Monster',synchro:'Synchro Monster',xyz:'Xyz Monster',link:'Link Monster',spell:'Spell Card',trap:'Trap Card'};
+function ygoKind(d,h){
+  const t=((d.description||'')+(d.extract||'')).toLowerCase();
+  if(/sort|magie|rituel|alchimie|malédiction|prophétie/.test(t)&&h%5===0)return'spell';
+  if(/piège|trahison|embuscade|complot/.test(t)&&h%5===1)return'trap';
+  if(/rituel|cérémonie|sacrifice/.test(t)&&h%4===0)return'ritual';
+  if(/fusion|hybride|alliance|coalition|empire/.test(t))return'fusion';
+  if(/lumière|vitesse|énergie|électricité|onde|photon/.test(t))return'synchro';
+  if(/cosmos|galaxie|univers|espace|trou noir|ténèbres/.test(t))return'xyz';
+  if(/réseau|technologie|internet|connexion|numérique/.test(t))return'link';
+  const simple=/né le|peuple|cité|île|lac|mont/.test(t)&&!/pouvoir|effet|magie/.test(t);
+  return simple&&h%3===0?'normal':'effect';
+}
+function ygoAttr(d){
+  const t=((d.description||'')+(d.extract||'')).toLowerCase();
+  if(/feu|flamme|volcan/.test(t))return'FIRE';
+  if(/eau|mer|océan|lac|pluie|fleuve/.test(t))return'WATER';
+  if(/vent|air|tempête|cyclone/.test(t))return'WIND';
+  if(/lumière|saint|divin|ange|soleil/.test(t))return'LIGHT';
+  if(/ombre|nuit|mort|ténèbres|démon|vampire/.test(t))return'DARK';
+  if(/dieu|déesse|divin|sacré/.test(t))return'DIVINE';
+  return'EARTH';
+}
+function ygoLevel(d){const wc=(d.extract||'').split(/\s+/).length;return Math.min(12,Math.max(1,Math.round(wc/50)))}
+function ygoRace(d,h){
+  const t=((d.description||'')+(d.extract||'')).toLowerCase();
+  if(/dragon/.test(t))return'Dragon';if(/zombie|mort-vivant/.test(t))return'Zombie';
+  if(/magie|sorcier|sort/.test(t))return'Magicien';if(/machine|robot/.test(t))return'Machine';
+  if(/plante|végétal|arbre/.test(t))return'Plante';if(/insecte/.test(t))return'Insecte';
+  if(/eau|mer|poisson/.test(t))return'Monstre Aquatique';if(/feu|flamme/.test(t))return'Pyro';
+  if(/ange|séraphin/.test(t))return'Ange';if(/démon|diable/.test(t))return'Démon';
+  if(/fantôme|spectre/.test(t))return'Fantôme';if(/monstre|bête|animal/.test(t))return'Bête';
+  return'Guerrier';
+}
+function ygoStats(d,kind,level,h){
+  if(!['normal','effect','ritual','fusion','synchro','xyz','link'].includes(kind))return null;
+  const t=(d.extract||'').toLowerCase();
+  const mil=/armée|guerrier|bataille|conquête|général/.test(t);
+  const int=/scientifique|inventeur|mathématicien|philosophe/.test(t);
+  const beast=/monstre|dragon|bête|démon/.test(t);
+  let atk=level*300,def=level*250;
+  if(beast){atk+=500}else if(mil){atk+=200;def-=100}else if(int){atk-=200;def+=300}
+  if(['xyz','synchro','fusion'].includes(kind)){atk+=500;def+=300}
+  atk=Math.min(5000,Math.round(Math.max(0,atk)/50)*50);
+  def=Math.min(5000,Math.round(Math.max(0,def)/50)*50);
+  return{atk,def:kind==='link'?null:def};
+}
+function ygoEffect(d,kind,h){
+  const sents=((d.extract||'').match(/[^.!?]+[.!?]+/g)||[d.extract||'']).filter(s=>s.trim().length>15);
+  const s0=(sents[0]||'').trim().slice(0,120);
+  const s1=(sents[1]||'').trim().slice(0,80);
+  if(kind==='spell')return`Activez cette carte : ${s0}`;
+  if(kind==='trap')return`Lorsque votre adversaire déclare une attaque : ${s0}. Vous pouvez ensuite piocher 1 carte.`;
+  if(kind==='normal')return'';
+  if(kind==='ritual')return`Vous pouvez Invoquer Rituellement cette carte avec le Sort Rituel adéquat. ${s0}`;
+  if(kind==='fusion')return`Doit être Invoqué par Fusion. ${s0} Une fois par tour : vous pouvez ${s1}.`;
+  if(kind==='synchro')return`1 Syntoniseur + 1 ou plusieurs monstres non-Syntoniseurs. ${s0}`;
+  if(kind==='xyz')return`2 monstres de Niveau ${h%4+4}. ${s0} Détachez 1 Matériel ; ${s1}.`;
+  if(kind==='link'){const ar=['↑','↗','→','↘','↓','↙','←','↖'];const n=range(1,4,h);const ch=[];for(let i=0;i<n;i++)ch.push(ar[(h+i*2)%8]);return`${n} monstres (non-Jeton). Flèches : ${ch.join(' ')}.\n${s0}`}
+  return`Lorsque cette carte est Invoquée : ${s0}. Une fois par tour : ${s1}.`;
+}
+function ygoBracket(kind,race,h){
+  if(kind==='spell')return`[Sort — ${pick(['Normale','Continue','Terrain de Jeu','Équipement','Rituel','Déclenchement Rapide'],h)}]`;
+  if(kind==='trap')return`[Piège — ${pick(['Normale','Continue','Contre'],h)}]`;
+  const ext={fusion:'/ Fusion',synchro:'/ Synchro',xyz:'/ Xyz',link:'/ Lien',ritual:'/ Rituel'};
+  return`[Monstre ${race}${ext[kind]?' '+ext[kind]:''} ${kind==='normal'?'/ Normal':'/ Effet'}]`;
+}
+function ygoFlavor(d,kind,h){
+  if(kind!=='normal')return'';
+  const desc=d.description||'';
+  if(desc.length>12&&desc.length<80)return desc;
+  const s=((d.extract||'').match(/[^.!?]+[.!?]+/g)||[]).filter(s=>s.trim().length>15&&s.trim().length<80);
+  return s.length?s[h%s.length].trim():'';
+}
+function buildYGO(d){
+  const h=hash(d.title||'X');
+  const kind=ygoKind(d,h);
+  const attr=ygoAttr(d);
+  const level=ygoLevel(d);
+  const race=ygoRace(d,h+1);
+  const stats=ygoStats(d,kind,level,h+2);
+  const eff=ygoEffect(d,kind,h+3);
+  const flav=ygoFlavor(d,kind,h+4);
+  const bracket=ygoBracket(kind,race,h+5);
+  const isLink=kind==='link';
+  const linkN=isLink?range(1,4,h):null;
+  return{name:(d.title||'').slice(0,28),kind,attr,level,race,stats,eff,flav,bracket,isXYZ:kind==='xyz',isLink,linkN,serial:String(h).padStart(8,'0').slice(0,8),image:d.thumbnail?.source||null,url:d.content_urls?.desktop?.page||'#',emoji:{DARK:'🌑',LIGHT:'☀️',FIRE:'🔥',WATER:'💧',EARTH:'🌍',WIND:'💨',DIVINE:'✨'}[attr]||'🐉'};
+}
+function renderYGO(c){
+  const yc=document.getElementById('yc');
+  yc.className='ygo-card '+c.kind;
+  document.getElementById('yc-name').textContent=c.name;
+  document.getElementById('yc-attr').textContent=ATTRS[c.attr]||'🌍';
+  const img=document.getElementById('yc-img'),ph=document.getElementById('yc-ph');
+  if(c.image){img.src=c.image;img.style.display='block';ph.style.display='none';img.onerror=()=>{img.style.display='none';ph.textContent=c.emoji;ph.style.display='flex'}}
+  else{img.style.display='none';ph.textContent=c.emoji;ph.style.display='flex'}
+  const starsEl=document.getElementById('yc-stars');starsEl.innerHTML='';
+  if(!c.isXYZ&&!c.isLink){for(let i=0;i<c.level;i++){const s=document.createElement('span');s.className='ygo-star';s.textContent='★';starsEl.appendChild(s)}}
+  else if(c.isXYZ){for(let i=0;i<c.level;i++){const s=document.createElement('span');s.className='ygo-star rk';s.textContent='✦';starsEl.appendChild(s)}}
+  else if(c.isLink){const s=document.createElement('span');s.className='ygo-star lk';s.textContent='LINK-'+c.linkN;starsEl.appendChild(s)}
+  document.getElementById('yc-subtype').textContent=YGO_LABELS[c.kind]||c.kind;
+  document.getElementById('yc-bracket').textContent=c.bracket;
+  document.getElementById('yc-eff').innerHTML=c.eff.split('\n').map(l=>`<div>${l}</div>`).join('');
+  document.getElementById('yc-flav').textContent=c.flav||'';
+  const statsEl=document.getElementById('yc-stats');statsEl.innerHTML='';
+  if(c.stats){
+    const a=document.createElement('div');a.className='ygo-stat';a.innerHTML=`ATK / <span>${c.stats.atk}</span>`;statsEl.appendChild(a);
+    if(c.stats.def!==null){const dv=document.createElement('div');dv.className='ygo-stat';dv.innerHTML=`DEF / <span>${c.stats.def}</span>`;statsEl.appendChild(dv)}
   }
-  if (type === 'lieu') {
-    if (/mont|sommet|pic|volcan/.test(all)) return 'Montagne';
-    if (/ville|cité|capitale/.test(all)) return 'Cité';
-    if (/mer|océan|lac|fleuve|rivière/.test(all)) return 'Étendue d\'Eau';
-    if (/forêt|jungle|bois/.test(all)) return 'Forêt';
-    if (/désert|steppe/.test(all)) return 'Désert';
-    if (/île|archipel/.test(all)) return 'Île';
-    return 'Terrain';
+  document.getElementById('yc-serial').textContent=c.serial;
+}
+
+// ══════════════ FLOW ══════════════
+let currentData=null;
+let currentMode='mtg';
+
+function switchMode(mode){
+  currentMode=mode;
+  document.getElementById('btnMTG').className='mode-btn'+(mode==='mtg'?' m-active':'');
+  document.getElementById('btnYGO').className='mode-btn'+(mode==='ygo'?' y-active':'');
+  document.getElementById('view-mtg').classList.toggle('hidden',mode!=='mtg');
+  document.getElementById('view-ygo').classList.toggle('hidden',mode!=='ygo');
+  if(currentData){
+    if(mode==='mtg')renderMTG(buildMTG(currentData));
+    else renderYGO(buildYGO(currentData));
   }
-  if (type === 'objet') {
-    if (/épée|lame|sabre/.test(all)) return 'Épée Légendaire';
-    if (/bouclier|armure/.test(all)) return 'Armure';
-    if (/anneau|amulette|talisman/.test(all)) return 'Relique';
-    if (/grimoire|livre|parchemin/.test(all)) return 'Grimoire';
-    return 'Artéfact';
-  }
-  if (type === 'magie') return 'Enchantement';
-  if (type === 'evenement') {
-    if (/guerre|bataille/.test(all)) return 'Guerre';
-    if (/épidémie|peste|pandémie/.test(all)) return 'Épidémie';
-    if (/révolution/.test(all)) return 'Révolution';
-    if (/catastrophe|tremblement|éruption|inondation/.test(all)) return 'Catastrophe';
-    return 'Évènement Historique';
-  }
-  return 'Inconnu';
 }
 
-function guessStats(data, type) {
-  const text = (data.extract || '') + ' ' + (data.description || '');
-  const wordCount = text.split(/\s+/).length;
-  const cost = Math.min(9, Math.max(1, Math.round(wordCount / 60)));
-  if (type === 'creature') {
-    const hasMilitary = /armée|guerrier|bataille|conquête|général|révolution/.test(text.toLowerCase());
-    const hasIntellect = /scientifique|inventeur|théorème|découverte|philosophie/.test(text.toLowerCase());
-    const power = hasMilitary ? Math.min(9, cost + 2) : (hasIntellect ? Math.min(9, cost) : Math.min(9, cost + 1));
-    const toughness = Math.min(10, cost + 1);
-    return { cost, power, toughness };
-  }
-  return { cost, power: null, toughness: null };
+function setLoading(on){
+  document.getElementById('loader').classList.toggle('hidden',!on);
+  document.getElementById('bGen').disabled=on;
 }
+function showErr(msg){const e=document.getElementById('err');e.textContent=msg;e.classList.remove('hidden')}
 
-function buildEffect(data, type) {
-  const extract = (data.extract || data.description || '').trim();
-  const sentences = extract.match(/[^.!?]+[.!?]+/g) || [extract];
-  const KEYWORDS = {
-    creature: ['VAILLANCE', 'TRAMPLE', 'PRESTIGE', 'LÉGENDAIRE', 'INDESTRUCTIBLE', 'HÂTE', 'VIGILANCE'],
-    lieu: ['MANA', 'BOUCLIER', 'SANCTUAIRE', 'ANCRAGE', 'BASTION'],
-    magie: ['SORT', 'DISSIPATION', 'RÉVÉLATION', 'PROPHÉTIE', 'ÉCLAIR'],
-    objet: ['ÉQUIPEMENT', 'RENFORCEMENT', 'PROTECTION', 'TRANCHANT'],
-    evenement: ['DÉVASTATEUR', 'INÉVITABLE', 'RAVAGE', 'CHAOS', 'TOURNANT'],
-  };
-  const kws = KEYWORDS[type] || KEYWORDS.creature;
-  const kw1 = kws[Math.floor(Math.random() * kws.length)];
-  const kw2 = kws[Math.floor(Math.random() * kws.length)];
-  const picked = sentences.slice(0, 2).join(' ').replace(/\s+/g, ' ').trim();
-  const short = picked.length > 220 ? picked.slice(0, 220) + '…' : picked;
-  return `[${kw1}] — ${short} Possède ${kw2}.`;
-}
-
-function buildFlavor(data) {
-  const desc = data.description || '';
-  if (desc.length > 10 && desc.length < 60) return desc;
-  const sentences = (data.extract || '').match(/[^.!?]+[.!?]+/g) || [];
-  for (let i = sentences.length - 1; i >= 0; i--) {
-    const s = sentences[i].trim();
-    if (s.length > 20 && s.length < 65) return s;
-  }
-  return desc.slice(0, 55) || '…';
-}
-
-const TYPE_LABELS = { creature:'Créature', lieu:'Terrain', magie:'Rituel', objet:'Artéfact', evenement:'Évènement' };
-const TYPE_EMOJI  = { creature:'🐉', lieu:'🏔️', magie:'✨', objet:'⚔️', evenement:'⚡' };
-
-function buildCard(data) {
-  const type = guessType(data);
-  const subtype = guessSubtype(data, type);
-  const { cost, power, toughness } = guessStats(data, type);
-  return {
-    name: (data.title || 'Inconnu').slice(0, 24),
-    type, subtype, cost,
-    effect: buildEffect(data, type),
-    flavor: buildFlavor(data),
-    power, toughness,
-    emoji: TYPE_EMOJI[type] || '📜',
-    image: data.thumbnail?.source || null,
-    url: data.content_urls?.desktop?.page || `https://${LANG}.wikipedia.org/wiki/${encodeURIComponent(data.title)}`
-  };
-}
-
-function renderCard(c) {
-  const card = document.getElementById('card');
-  card.setAttribute('data-t', c.type);
-  document.getElementById('cName').textContent   = c.name;
-  document.getElementById('cMana').textContent   = c.cost;
-  document.getElementById('cType').textContent   = `${TYPE_LABELS[c.type] || c.type} — ${c.subtype}`;
-  document.getElementById('cFlavor').textContent = c.flavor ? `« ${c.flavor} »` : '';
-  document.getElementById('cWiki').href          = c.url;
-  document.getElementById('cText').innerHTML = c.effect.replace(
-    /\[([A-ZÀÂÄÉÈÊËÎÏÔÙÛÜŸ\s]+)\]/g, '<span class="kw">$1</span>'
-  ).replace(
-    /\b(VAILLANCE|TRAMPLE|PRESTIGE|LÉGENDAIRE|INDESTRUCTIBLE|HÂTE|VIGILANCE|MANA|BOUCLIER|SANCTUAIRE|ANCRAGE|BASTION|SORT|DISSIPATION|RÉVÉLATION|PROPHÉTIE|ÉCLAIR|ÉQUIPEMENT|RENFORCEMENT|PROTECTION|TRANCHANT|DÉVASTATEUR|INÉVITABLE|RAVAGE|CHAOS|TOURNANT)\b/g,
-    '<span class="kw">$1</span>'
-  );
-  const img = document.getElementById('cImg');
-  const ph  = document.getElementById('cPh');
-  if (c.image) {
-    img.src = c.image; img.style.display = 'block'; ph.style.display = 'none';
-    img.onerror = function() { this.style.display='none'; ph.textContent=c.emoji; ph.style.display='flex'; };
-  } else {
-    img.style.display = 'none'; ph.textContent = c.emoji; ph.style.display = 'flex';
-  }
-  const pt = document.getElementById('cPT');
-  if (c.power !== null && c.toughness !== null) { pt.textContent=`${c.power} / ${c.toughness}`; pt.style.display='block'; }
-  else { pt.style.display='none'; }
-  document.getElementById('cardWrap').classList.remove('hidden');
-}
-
-function setLoading(on) {
-  document.getElementById('loader').classList.toggle('hidden', !on);
-  document.getElementById('bGen').disabled  = on;
-  document.getElementById('bRand').disabled = on;
-}
-function showError(msg) {
-  const b = document.getElementById('errBox');
-  b.textContent = msg; b.classList.remove('hidden');
-}
-
-async function fetchRandom() {
-  const r = await fetch(`${API}/page/random/summary`);
-  if (!r.ok) throw new Error('Impossible de charger un article aléatoire.');
-  return await r.json();
-}
-async function fetchByTitle(title) {
-  const slug = encodeURIComponent(title.trim().replace(/ /g,'_'));
-  const r = await fetch(`${API}/page/summary/${slug}`);
-  if (!r.ok) throw new Error(`Article introuvable : « ${title} »`);
-  return await r.json();
-}
-
-async function runSearch(title) {
-  document.getElementById('q').value = title;
-  document.getElementById('cardWrap').classList.add('hidden');
-  document.getElementById('errBox').classList.add('hidden');
+async function go(title){
+  document.getElementById('q').value=title;
+  document.getElementById('out').classList.add('hidden');
+  document.getElementById('err').classList.add('hidden');
   setLoading(true);
-  try { renderCard(buildCard(await fetchByTitle(title))); }
-  catch(e) { showError(e.message || 'Erreur inconnue.'); }
-  finally { setLoading(false); }
+  try{
+    const data=await fetchWiki(title);
+    currentData=data;
+    document.getElementById('wikiLink').href=data.content_urls?.desktop?.page||'#';
+    if(currentMode==='mtg')renderMTG(buildMTG(data));
+    else renderYGO(buildYGO(data));
+    document.getElementById('out').classList.remove('hidden');
+  }catch(e){showErr(e.message)}
+  finally{setLoading(false)}
 }
 
-async function runRandom() {
-  document.getElementById('cardWrap').classList.add('hidden');
-  document.getElementById('errBox').classList.add('hidden');
-  setLoading(true);
-  try {
-    const data = await fetchRandom();
-    document.getElementById('q').value = data.title;
-    renderCard(buildCard(data));
-  } catch(e) { showError(e.message || 'Erreur inconnue.'); }
-  finally { setLoading(false); }
-}
-
-document.getElementById('bGen').onclick = () => { const q=document.getElementById('q').value.trim(); if(q) runSearch(q); };
-document.getElementById('bRand').onclick = runRandom;
-document.getElementById('q').addEventListener('keydown', e => { if(e.key==='Enter'){const q=document.getElementById('q').value.trim();if(q)runSearch(q);} });
+document.getElementById('bGen').onclick=()=>{const q=document.getElementById('q').value.trim();if(q)go(q)};
+document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Enter'){const q=document.getElementById('q').value.trim();if(q)go(q)}});
 </script>
 </body>
 </html>
