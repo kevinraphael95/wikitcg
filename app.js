@@ -487,6 +487,43 @@ document.getElementById('bGen').addEventListener('click', () => {
   if (q) go(q);
 });
 
+
+/* ── Carte du jour ── */
+async function goDaily() {
+  // Seed basé sur la date du jour — même seed = même article
+  const today = new Date();
+  const seed  = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  // On utilise un titre déterministe via l'API "random" seedée par date
+  const cached = localStorage.getItem('wikitcg-daily-date');
+  const cachedTitle = localStorage.getItem('wikitcg-daily-title');
+
+  if (cached === String(seed) && cachedTitle) {
+    go(cachedTitle);
+    return;
+  }
+  // Pas encore en cache : on tire aléatoirement et on stocke
+  document.getElementById('out').classList.add('hidden');
+  document.getElementById('err').classList.add('hidden');
+  setLoading(true);
+  try {
+    const data = await fetchRandom();
+    localStorage.setItem('wikitcg-daily-date', String(seed));
+    localStorage.setItem('wikitcg-daily-title', data.title);
+    currentData = data;
+    document.getElementById('q').value = data.title || '';
+    document.getElementById('wikiLink').href = data.content_urls?.desktop?.page || '#';
+    if (currentMode === 'mtg') renderMTG(buildMTG(data));
+    else                        renderYGO(buildYGO(data));
+    document.getElementById('out').classList.remove('hidden');
+  } catch (e) {
+    showErr(e.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+document.getElementById('bDaily').addEventListener('click', goDaily);
+
 document.getElementById('bRand').addEventListener('click', goRandom);
 
 document.getElementById('q').addEventListener('keydown', e => {
