@@ -31,8 +31,6 @@ h1 {
   line-height:1;
 }
 header p { font-style:italic; color:var(--sub); font-size:1rem; margin-top:.5rem; }
-
-/* SEARCH */
 .search { width:100%; max-width:500px; display:flex; flex-direction:column; gap:.7rem; margin-bottom:1.2rem; animation:fadeDown .5s .1s ease both; }
 .search input {
   width:100%; background:var(--panel); border:1px solid var(--border); border-radius:8px;
@@ -51,8 +49,6 @@ header p { font-style:italic; color:var(--sub); font-size:1rem; margin-top:.5rem
 .btn-gold { background:linear-gradient(135deg,#7a5010,var(--gold)); color:#07070d; }
 .btn-ghost { background:transparent; border:1px solid var(--border); color:var(--sub); }
 .btn-ghost:hover { border-color:var(--gold); color:var(--gold); }
-
-/* PILLS */
 .pills {
   display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center;
   max-width:500px; margin-bottom:2.2rem; animation:fadeDown .5s .15s ease both;
@@ -63,52 +59,37 @@ header p { font-style:italic; color:var(--sub); font-size:1rem; margin-top:.5rem
   padding:.3rem 1rem; border-radius:99px; cursor:pointer; transition:all .2s;
 }
 .pill:hover { border-color:var(--gold); color:var(--gold2); background:rgba(201,168,76,.07); }
-
-/* LOADER */
 .loader { display:flex; flex-direction:column; align-items:center; gap:1rem; padding:3rem; }
 .dots { display:flex; gap:.4rem; }
 .dot { width:7px; height:7px; background:var(--gold); border-radius:50%; animation:bounce .7s infinite ease-in-out; }
 .dot:nth-child(2) { animation-delay:.15s; }
 .dot:nth-child(3) { animation-delay:.3s; }
-
-/* ERROR */
 .error-box {
   max-width:460px; text-align:center; padding:1rem 1.25rem; border-radius:8px;
   border:1px solid #3a1010; background:#110808; color:#cc4444; font-style:italic;
 }
-
-/* CARD */
 .card-wrap { display:flex; flex-direction:column; align-items:center; gap:1rem; animation:fadeUp .4s ease; }
-
 .card {
   width:min(340px,88vw); border-radius:16px; padding:13px; position:relative;
   transition:transform .4s ease; transform-style:preserve-3d;
 }
 @media(hover:hover){ .card:hover { transform:rotateY(-5deg) rotateX(3deg) scale(1.025); } }
-
-/* skins par type */
 .card[data-t="creature"] { background:linear-gradient(155deg,#0f1a09,#0a1208); border:2px solid #3a7520; --a:#65c045; --f:#3a7520; box-shadow:0 0 40px rgba(58,117,32,.2),0 20px 60px rgba(0,0,0,.85); }
 .card[data-t="lieu"]     { background:linear-gradient(155deg,#08101c,#060d18); border:2px solid #1e4888; --a:#3d8de0; --f:#1e4888; box-shadow:0 0 40px rgba(30,72,136,.2),0 20px 60px rgba(0,0,0,.85); }
 .card[data-t="magie"]    { background:linear-gradient(155deg,#130a1c,#0f0816); border:2px solid #681c88; --a:#be45d5; --f:#681c88; box-shadow:0 0 40px rgba(104,28,136,.2),0 20px 60px rgba(0,0,0,.85); }
 .card[data-t="objet"]    { background:linear-gradient(155deg,#1c1106,#150d05); border:2px solid #7c4a0a; --a:#d0903a; --f:#7c4a0a; box-shadow:0 0 40px rgba(124,74,10,.2),0 20px 60px rgba(0,0,0,.85); }
 .card[data-t="evenement"]{ background:linear-gradient(155deg,#1c0808,#160606); border:2px solid #8c1e1e; --a:#d84040; --f:#8c1e1e; box-shadow:0 0 40px rgba(140,30,30,.2),0 20px 60px rgba(0,0,0,.85); }
-
 .card::after { content:''; position:absolute; inset:8px; border-radius:10px; border:1px solid var(--f); pointer-events:none; }
-
-/* coins décoratifs */
 .cc { position:absolute; width:16px; height:16px; border-color:var(--a); border-style:solid; opacity:.45; }
 .cc.tl { top:14px; left:14px; border-width:1px 0 0 1px; border-radius:2px 0 0 0; }
 .cc.tr { top:14px; right:14px; border-width:1px 1px 0 0; border-radius:0 2px 0 0; }
 .cc.bl { bottom:14px; left:14px; border-width:0 0 1px 1px; border-radius:0 0 0 2px; }
 .cc.br { bottom:14px; right:14px; border-width:0 1px 1px 0; border-radius:0 0 2px 0; }
-
 .c-head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px; position:relative; z-index:2; }
 .c-name { font-family:'Cinzel',serif; font-weight:900; font-size:clamp(.85rem,3.5vw,1.05rem); color:#f0e8d0; line-height:1.2; flex:1; }
 .c-mana { width:26px; height:26px; border-radius:50%; background:var(--f); border:2px solid var(--a); display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:.72rem; font-weight:900; color:var(--a); flex-shrink:0; }
-
 .c-art { width:100%; height:180px; border-radius:6px; border:2px solid var(--f); object-fit:cover; display:block; margin-bottom:10px; background:var(--dim); position:relative; z-index:2; }
 .c-art-ph { width:100%; height:180px; border-radius:6px; border:2px solid var(--f); margin-bottom:10px; background:linear-gradient(135deg,#111122,#080812); display:flex; align-items:center; justify-content:center; font-size:3rem; opacity:.5; position:relative; z-index:2; }
-
 .c-type { font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.18em; text-transform:uppercase; color:var(--a); border-top:1px solid var(--f); border-bottom:1px solid var(--f); padding:5px 2px; margin-bottom:10px; position:relative; z-index:2; }
 .c-text { font-size:.84rem; line-height:1.6; color:#bfb8a8; position:relative; z-index:2; min-height:70px; }
 .c-text .kw { font-weight:600; font-style:normal; color:var(--a); }
@@ -116,7 +97,6 @@ header p { font-style:italic; color:var(--sub); font-size:1rem; margin-top:.5rem
 .c-foot { display:flex; justify-content:space-between; align-items:flex-end; margin-top:14px; position:relative; z-index:2; }
 .c-set { font-family:'Cinzel',serif; font-size:.52rem; letter-spacing:.12em; color:var(--dim); }
 .c-pt { font-family:'Cinzel',serif; font-size:.9rem; font-weight:900; color:#f0e8d0; background:var(--f); border:1px solid var(--a); border-radius:4px; padding:3px 13px; }
-
 .card-actions { display:flex; gap:.6rem; width:min(340px,88vw); }
 .wiki-a {
   display:inline-flex; align-items:center; gap:6px; flex:1; justify-content:center;
@@ -125,8 +105,6 @@ header p { font-style:italic; color:var(--sub); font-size:1rem; margin-top:.5rem
   border-radius:8px; padding:.75rem; transition:all .2s;
 }
 .wiki-a:hover { border-color:var(--gold); color:var(--gold); }
-
-/* UTILS */
 .hidden { display:none !important; }
 @keyframes fadeDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:none} }
 @keyframes fadeUp   { from{opacity:0;transform:translateY(16px)}  to{opacity:1;transform:none} }
@@ -153,7 +131,7 @@ header p { font-style:italic; color:var(--sub); font-size:1rem; margin-top:.5rem
   <button class="pill" onclick="runSearch('Paris')">Paris</button>
   <button class="pill" onclick="runSearch('Excalibur')">Excalibur</button>
   <button class="pill" onclick="runSearch('Kraken')">Kraken</button>
-  <button class="pill" onclick="runSearch(&quot;Jeanne d\'Arc&quot;)">Jeanne d'Arc</button>
+  <button class="pill" onclick="runSearch('Jeanne d\'Arc')">Jeanne d'Arc</button>
   <button class="pill" onclick="runSearch('Peste noire')">Peste noire</button>
   <button class="pill" onclick="runSearch('Mont Everest')">Everest</button>
   <button class="pill" onclick="runSearch('Albert Einstein')">Einstein</button>
@@ -191,137 +169,168 @@ header p { font-style:italic; color:var(--sub); font-size:1rem; margin-top:.5rem
 </div>
 
 <script>
-// ── Exactement la même API que "Préfères-tu" ──
 const LANG = 'fr';
 const API  = `https://${LANG}.wikipedia.org/api/rest_v1`;
+
+function guessType(data) {
+  const text = ((data.description || '') + ' ' + (data.extract || '')).toLowerCase();
+  if (/bataille|guerre|révolution|siège|conquête|épidémie|catastrophe|tremblement|inondation|éruption|attentat|assassinat/.test(text)) return 'evenement';
+  if (/ville|pays|mont|île|mer|lac|fleuve|forêt|désert|continent|région|province|territoire|océan|golfe|cap|plaine|vallée|massif/.test(text)) return 'lieu';
+  if (/épée|bouclier|armure|artefact|relique|talisman|anneau|couronne|bâton|baguette|lance|arc|flèche|calice|grimoire/.test(text)) return 'objet';
+  if (/sort|magie|enchantement|rituel|alchimie|sorcellerie|prophétie|malédiction|rune/.test(text)) return 'magie';
+  if (/animal|bête|monstre|créature|dragon|démon|dieu|esprit|être|insecte|oiseau|mammifère|reptile|poisson/.test(text)) return 'creature';
+  return 'creature';
+}
+
+function guessSubtype(data, type) {
+  const all = ((data.description || '') + ' ' + (data.extract || '')).toLowerCase();
+  if (type === 'creature') {
+    if (/général|militaire|maréchal|amiral|commandant/.test(all)) return 'Guerrier Légendaire';
+    if (/roi|reine|emperor|impératrice|pharaon|sultan|prince/.test(all)) return 'Noble Légendaire';
+    if (/philosophe|penseur|théoricien/.test(all)) return 'Sage Légendaire';
+    if (/scientifique|physicien|mathématicien|biologiste|chimiste/.test(all)) return 'Mage Savant';
+    if (/artiste|peintre|sculpteur|musicien|compositeur/.test(all)) return 'Barde Légendaire';
+    if (/monstre|dragon|démon|titan|géant/.test(all)) return 'Monstre';
+    if (/dieu|déesse|divinité/.test(all)) return 'Divinité';
+    return 'Humain Légendaire';
+  }
+  if (type === 'lieu') {
+    if (/mont|sommet|pic|volcan/.test(all)) return 'Montagne';
+    if (/ville|cité|capitale/.test(all)) return 'Cité';
+    if (/mer|océan|lac|fleuve|rivière/.test(all)) return 'Étendue d\'Eau';
+    if (/forêt|jungle|bois/.test(all)) return 'Forêt';
+    if (/désert|steppe/.test(all)) return 'Désert';
+    if (/île|archipel/.test(all)) return 'Île';
+    return 'Terrain';
+  }
+  if (type === 'objet') {
+    if (/épée|lame|sabre/.test(all)) return 'Épée Légendaire';
+    if (/bouclier|armure/.test(all)) return 'Armure';
+    if (/anneau|amulette|talisman/.test(all)) return 'Relique';
+    if (/grimoire|livre|parchemin/.test(all)) return 'Grimoire';
+    return 'Artéfact';
+  }
+  if (type === 'magie') return 'Enchantement';
+  if (type === 'evenement') {
+    if (/guerre|bataille/.test(all)) return 'Guerre';
+    if (/épidémie|peste|pandémie/.test(all)) return 'Épidémie';
+    if (/révolution/.test(all)) return 'Révolution';
+    if (/catastrophe|tremblement|éruption|inondation/.test(all)) return 'Catastrophe';
+    return 'Évènement Historique';
+  }
+  return 'Inconnu';
+}
+
+function guessStats(data, type) {
+  const text = (data.extract || '') + ' ' + (data.description || '');
+  const wordCount = text.split(/\s+/).length;
+  const cost = Math.min(9, Math.max(1, Math.round(wordCount / 60)));
+  if (type === 'creature') {
+    const hasMilitary = /armée|guerrier|bataille|conquête|général|révolution/.test(text.toLowerCase());
+    const hasIntellect = /scientifique|inventeur|théorème|découverte|philosophie/.test(text.toLowerCase());
+    const power = hasMilitary ? Math.min(9, cost + 2) : (hasIntellect ? Math.min(9, cost) : Math.min(9, cost + 1));
+    const toughness = Math.min(10, cost + 1);
+    return { cost, power, toughness };
+  }
+  return { cost, power: null, toughness: null };
+}
+
+function buildEffect(data, type) {
+  const extract = (data.extract || data.description || '').trim();
+  const sentences = extract.match(/[^.!?]+[.!?]+/g) || [extract];
+  const KEYWORDS = {
+    creature: ['VAILLANCE', 'TRAMPLE', 'PRESTIGE', 'LÉGENDAIRE', 'INDESTRUCTIBLE', 'HÂTE', 'VIGILANCE'],
+    lieu: ['MANA', 'BOUCLIER', 'SANCTUAIRE', 'ANCRAGE', 'BASTION'],
+    magie: ['SORT', 'DISSIPATION', 'RÉVÉLATION', 'PROPHÉTIE', 'ÉCLAIR'],
+    objet: ['ÉQUIPEMENT', 'RENFORCEMENT', 'PROTECTION', 'TRANCHANT'],
+    evenement: ['DÉVASTATEUR', 'INÉVITABLE', 'RAVAGE', 'CHAOS', 'TOURNANT'],
+  };
+  const kws = KEYWORDS[type] || KEYWORDS.creature;
+  const kw1 = kws[Math.floor(Math.random() * kws.length)];
+  const kw2 = kws[Math.floor(Math.random() * kws.length)];
+  const picked = sentences.slice(0, 2).join(' ').replace(/\s+/g, ' ').trim();
+  const short = picked.length > 220 ? picked.slice(0, 220) + '…' : picked;
+  return `[${kw1}] — ${short} Possède ${kw2}.`;
+}
+
+function buildFlavor(data) {
+  const desc = data.description || '';
+  if (desc.length > 10 && desc.length < 60) return desc;
+  const sentences = (data.extract || '').match(/[^.!?]+[.!?]+/g) || [];
+  for (let i = sentences.length - 1; i >= 0; i--) {
+    const s = sentences[i].trim();
+    if (s.length > 20 && s.length < 65) return s;
+  }
+  return desc.slice(0, 55) || '…';
+}
 
 const TYPE_LABELS = { creature:'Créature', lieu:'Terrain', magie:'Rituel', objet:'Artéfact', evenement:'Évènement' };
 const TYPE_EMOJI  = { creature:'🐉', lieu:'🏔️', magie:'✨', objet:'⚔️', evenement:'⚡' };
 
-// Fetch random — copié du fichier de référence
-async function fetchRandom() {
-  const r = await fetch(`${API}/page/random/summary`);
-  const d = await r.json();
+function buildCard(data) {
+  const type = guessType(data);
+  const subtype = guessSubtype(data, type);
+  const { cost, power, toughness } = guessStats(data, type);
   return {
-    title: d.title,
-    extract: (d.description || d.extract || '').slice(0, 500),
-    image: d.thumbnail?.source || null,
-    url: d.content_urls?.desktop?.page || `https://${LANG}.wikipedia.org/wiki/${encodeURIComponent(d.title)}`
+    name: (data.title || 'Inconnu').slice(0, 24),
+    type, subtype, cost,
+    effect: buildEffect(data, type),
+    flavor: buildFlavor(data),
+    power, toughness,
+    emoji: TYPE_EMOJI[type] || '📜',
+    image: data.thumbnail?.source || null,
+    url: data.content_urls?.desktop?.page || `https://${LANG}.wikipedia.org/wiki/${encodeURIComponent(data.title)}`
   };
 }
 
-// Fetch par titre — même endpoint REST v1
-async function fetchByTitle(title) {
-  const slug = encodeURIComponent(title.trim().replace(/ /g, '_'));
-  const r = await fetch(`${API}/page/summary/${slug}`);
-  if (!r.ok) throw new Error(`Article introuvable : « ${title} »`);
-  const d = await r.json();
-  return {
-    title: d.title,
-    extract: (d.description || d.extract || '').slice(0, 500),
-    image: d.thumbnail?.source || null,
-    url: d.content_urls?.desktop?.page || `https://${LANG}.wikipedia.org/wiki/${slug}`
-  };
-}
-
-// ── Claude génère la carte ──
-async function genCard(page) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 700,
-      messages: [{
-        role: 'user',
-        content: `Tu es un game designer TCG. Crée une carte depuis cet article Wikipédia.
-
-Article: "${page.title}"
-Résumé: "${page.extract}"
-
-Réponds UNIQUEMENT en JSON valide, sans backticks, sans texte autour :
-{"type":"creature|lieu|magie|objet|evenement","name":"nom max 24 chars","subtype":"sous-type précis","cost":1-9,"effect":"2-3 phrases avec MOTS-CLÉS EN MAJUSCULES style Magic","flavor":"phrase poétique max 55 chars","power":0-10 ou null,"toughness":0-10 ou null,"emoji":"emoji"}`
-      }]
-    })
-  });
-  const data = await resp.json();
-  if (data.error) throw new Error(data.error.message);
-  const raw = data.content[0].text.trim().replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
-  return JSON.parse(raw);
-}
-
-// ── Render ──
-function renderCard(page, c) {
+function renderCard(c) {
   const card = document.getElementById('card');
-  card.setAttribute('data-t', c.type || 'creature');
-
-  document.getElementById('cName').textContent  = c.name;
-  document.getElementById('cMana').textContent  = c.cost;
-  document.getElementById('cType').textContent  = `${TYPE_LABELS[c.type] || c.type} — ${c.subtype}`;
+  card.setAttribute('data-t', c.type);
+  document.getElementById('cName').textContent   = c.name;
+  document.getElementById('cMana').textContent   = c.cost;
+  document.getElementById('cType').textContent   = `${TYPE_LABELS[c.type] || c.type} — ${c.subtype}`;
   document.getElementById('cFlavor').textContent = c.flavor ? `« ${c.flavor} »` : '';
-  document.getElementById('cWiki').href          = page.url;
-
-  // effet avec keywords en gras
+  document.getElementById('cWiki').href          = c.url;
   document.getElementById('cText').innerHTML = c.effect.replace(
-    /\b([A-ZÀÂÄÉÈÊËÎÏÔÙÛÜŸ]{2,}(?:\s[A-ZÀÂÄÉÈÊËÎÏÔÙÛÜŸ]+)*)\b/g,
+    /\[([A-ZÀÂÄÉÈÊËÎÏÔÙÛÜŸ\s]+)\]/g, '<span class="kw">$1</span>'
+  ).replace(
+    /\b(VAILLANCE|TRAMPLE|PRESTIGE|LÉGENDAIRE|INDESTRUCTIBLE|HÂTE|VIGILANCE|MANA|BOUCLIER|SANCTUAIRE|ANCRAGE|BASTION|SORT|DISSIPATION|RÉVÉLATION|PROPHÉTIE|ÉCLAIR|ÉQUIPEMENT|RENFORCEMENT|PROTECTION|TRANCHANT|DÉVASTATEUR|INÉVITABLE|RAVAGE|CHAOS|TOURNANT)\b/g,
     '<span class="kw">$1</span>'
   );
-
-  // image — même pattern onerror que le fichier de référence
   const img = document.getElementById('cImg');
   const ph  = document.getElementById('cPh');
-  if (page.image) {
-    img.src = page.image;
-    img.style.display = 'block';
-    ph.style.display = 'none';
-    img.onerror = function() {
-      this.style.display = 'none';
-      ph.textContent = c.emoji || TYPE_EMOJI[c.type] || '📜';
-      ph.style.display = 'flex';
-    };
+  if (c.image) {
+    img.src = c.image; img.style.display = 'block'; ph.style.display = 'none';
+    img.onerror = function() { this.style.display='none'; ph.textContent=c.emoji; ph.style.display='flex'; };
   } else {
-    img.style.display = 'none';
-    ph.textContent = c.emoji || TYPE_EMOJI[c.type] || '📜';
-    ph.style.display = 'flex';
+    img.style.display = 'none'; ph.textContent = c.emoji; ph.style.display = 'flex';
   }
-
-  // P/T
   const pt = document.getElementById('cPT');
-  if (c.power !== null && c.toughness !== null) {
-    pt.textContent = `${c.power} / ${c.toughness}`;
-    pt.style.display = 'block';
-  } else {
-    pt.style.display = 'none';
-  }
-
+  if (c.power !== null && c.toughness !== null) { pt.textContent=`${c.power} / ${c.toughness}`; pt.style.display='block'; }
+  else { pt.style.display='none'; }
   document.getElementById('cardWrap').classList.remove('hidden');
 }
 
-// ── Flow ──
 function setLoading(on) {
   document.getElementById('loader').classList.toggle('hidden', !on);
   document.getElementById('bGen').disabled  = on;
   document.getElementById('bRand').disabled = on;
 }
-
 function showError(msg) {
   const b = document.getElementById('errBox');
-  b.textContent = msg;
-  b.classList.remove('hidden');
+  b.textContent = msg; b.classList.remove('hidden');
 }
 
-async function run(page) {
-  document.getElementById('cardWrap').classList.add('hidden');
-  document.getElementById('errBox').classList.add('hidden');
-  setLoading(true);
-  try {
-    const card = await genCard(page);
-    renderCard(page, card);
-  } catch(e) {
-    showError(e.message || 'Erreur inconnue.');
-  } finally {
-    setLoading(false);
-  }
+async function fetchRandom() {
+  const r = await fetch(`${API}/page/random/summary`);
+  if (!r.ok) throw new Error('Impossible de charger un article aléatoire.');
+  return await r.json();
+}
+async function fetchByTitle(title) {
+  const slug = encodeURIComponent(title.trim().replace(/ /g,'_'));
+  const r = await fetch(`${API}/page/summary/${slug}`);
+  if (!r.ok) throw new Error(`Article introuvable : « ${title} »`);
+  return await r.json();
 }
 
 async function runSearch(title) {
@@ -329,15 +338,9 @@ async function runSearch(title) {
   document.getElementById('cardWrap').classList.add('hidden');
   document.getElementById('errBox').classList.add('hidden');
   setLoading(true);
-  try {
-    const page = await fetchByTitle(title);
-    const card = await genCard(page);
-    renderCard(page, card);
-  } catch(e) {
-    showError(e.message || 'Erreur inconnue.');
-  } finally {
-    setLoading(false);
-  }
+  try { renderCard(buildCard(await fetchByTitle(title))); }
+  catch(e) { showError(e.message || 'Erreur inconnue.'); }
+  finally { setLoading(false); }
 }
 
 async function runRandom() {
@@ -345,29 +348,16 @@ async function runRandom() {
   document.getElementById('errBox').classList.add('hidden');
   setLoading(true);
   try {
-    const page = await fetchRandom();
-    document.getElementById('q').value = page.title;
-    const card = await genCard(page);
-    renderCard(page, card);
-  } catch(e) {
-    showError(e.message || 'Erreur inconnue.');
-  } finally {
-    setLoading(false);
-  }
+    const data = await fetchRandom();
+    document.getElementById('q').value = data.title;
+    renderCard(buildCard(data));
+  } catch(e) { showError(e.message || 'Erreur inconnue.'); }
+  finally { setLoading(false); }
 }
 
-document.getElementById('bGen').onclick = () => {
-  const q = document.getElementById('q').value.trim();
-  if (q) runSearch(q);
-};
+document.getElementById('bGen').onclick = () => { const q=document.getElementById('q').value.trim(); if(q) runSearch(q); };
 document.getElementById('bRand').onclick = runRandom;
-document.getElementById('q').addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    const q = document.getElementById('q').value.trim();
-    if (q) runSearch(q);
-  }
-});
+document.getElementById('q').addEventListener('keydown', e => { if(e.key==='Enter'){const q=document.getElementById('q').value.trim();if(q)runSearch(q);} });
 </script>
 </body>
 </html>
-
