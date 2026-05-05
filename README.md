@@ -1,1 +1,1 @@
-https://kevinraphael95.github.io/wikitcg/
+https://kevinraphael95.github.io/wikitcg.html
