@@ -9,15 +9,12 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <button class="theme-toggle" id="themeBtn" aria-label="Changer de thème">☽</button>
-
 <header>
   <div class="header-ornament">✦ ✦ ✦</div>
   <h1>WikiTCG</h1>
   <p>Chaque article Wikipédia devient une carte</p>
 </header>
-
 <section class="ui" aria-label="Recherche">
   <div class="search-row">
     <div class="search-wrap">
@@ -31,7 +28,6 @@
     <button class="btn btn-invoke btn-rand-full" id="bRand">⚄ Aléatoire</button>
   </div>
 </section>
-
 <div id="loader" class="loader hidden" aria-live="polite">
   <div class="loader-inner">
     <div class="loader-rune">᛭</div>
@@ -39,9 +35,7 @@
     <p class="loader-txt">Consultation des archives…</p>
   </div>
 </div>
-
 <div id="err" class="err hidden" role="alert"></div>
-
 <div id="out" class="card-zone hidden">
   <div class="mode-switch" role="tablist">
     <button class="mode-btn m-active" id="btnMTG" role="tab" onclick="switchMode('mtg')">
@@ -52,6 +46,7 @@
     </button>
   </div>
 
+  <!-- MTG -->
   <div id="view-mtg" role="tabpanel">
     <div class="mtg-card" id="mc">
       <div class="mtg-inner"></div>
@@ -80,6 +75,7 @@
     </div>
   </div>
 
+  <!-- YGO -->
   <div id="view-ygo" class="hidden" role="tabpanel">
     <div class="ygo-card" id="yc">
       <div class="ygo-header">
@@ -90,9 +86,10 @@
         <img id="yc-img" src="" alt="" loading="lazy">
         <div class="ygo-art-ph" id="yc-ph"></div>
       </div>
+      <!-- étoiles à droite, subtype à gauche -->
       <div class="ygo-typeline">
-        <div class="ygo-stars" id="yc-stars"></div>
         <div class="ygo-subtype" id="yc-subtype"></div>
+        <div class="ygo-stars" id="yc-stars"></div>
       </div>
       <div class="ygo-textbox" id="yc-box">
         <div class="ygo-bracket" id="yc-bracket"></div>
@@ -101,8 +98,11 @@
       </div>
       <div class="ygo-stats" id="yc-stats"></div>
       <div class="ygo-foot">
-        <span>WIKITCG-001</span>
-        <span id="yc-serial"></span>
+        <div class="ygo-foot-left">
+          <div class="ygo-holo"></div>
+          <span class="ygo-set-info">WIKITCG-001</span>
+        </div>
+        <span class="ygo-serial" id="yc-serial"></span>
       </div>
     </div>
   </div>
@@ -111,7 +111,6 @@
     <span>↗</span> Lire l'article Wikipédia
   </a>
 </div>
-
 <script src="app.js"></script>
 </body>
 </html>
