@@ -371,4 +371,361 @@ function mtgFlavor(summary) {
   if (desc.length > 8 && desc.length < 90) return desc;
   const sents = ((summary.extract || '').match(/[^.!?]+[.!?]+/g) || [])
     .filter(s => s.trim().length > 15 && s.trim().length < 100);
-  return sents.length ? sents[0].trim() : ''
+  return sents.length ? sents[0].trim() : '';
+}
+
+/* ══════════════════════════════════════════
+   BUILD MTG
+══════════════════════════════════════════ */
+
+function buildMTG(summary, cats) {
+  const h        = hash(summary.title || 'X');
+  const desc     = summary.description || '';
+  const category = detectCategory(summary, cats);
+
+  let color, subtype;
+  switch (category) {
+    case 'place':   color = getPlaceColor(desc, cats);  subtype = ''; break;
+    case 'person':  color = getPersonColor(desc, cats); subtype = getPersonSubtype(desc, cats); break;
+    case 'animal':  color = getAnimalColor(desc);        subtype = getAnimalSubtype(desc); break;
+    case 'object':  color = pick(['A','W','U','R'], h);  subtype = getObjectSubtype(desc); break;
+    case 'event':   color = getEventColor(desc);         subtype = ''; break;
+    case 'work':    color = pick(['U','W','B'], h);      subtype = ''; break;
+    default:        color = pick(['U','W','B','G'], h);  subtype = '';
+  }
+
+  const ability = mtgAbility(category, subtype, desc, color, h);
+  const kws     = mtgKeywords(category, subtype, color, h);
+  const pt      = mtgPT(category, subtype, desc, h+2);
+  const mana    = mtgMana(category, color, summary.extract || '', h+3);
+  const typeStr = mtgTypeString(category, subtype, desc, cats);
+  const rarity  = mtgRarity(category, desc, h);
+  const flavor  = mtgFlavor(summary);
+  const dark    = ['U','B','R','G','M'].includes(color);
+  const EMOJIS  = { W:'☀️', U:'💧', B:'💀', R:'🔥', G:'🌿', A:'💎', M:'🌈' };
+
+  return { name: (summary.title||'').slice(0,26), color, category, subtype, kws, ability, pt, mana, rarity, typeStr, flavor, dark, image: summary.thumbnail?.source||null, url: summary.content_urls?.desktop?.page||'#', emoji: EMOJIS[color]||'🐉' };
+}
+
+/* ══════════════════════════════════════════
+   RENDER MTG
+══════════════════════════════════════════ */
+
+function renderMTG(c) {
+  const mc = document.getElementById('mc');
+  mc.className = 'mtg-card ' + c.color;
+  document.getElementById('mc-name').textContent    = c.name;
+  document.getElementById('mc-typetxt').textContent = c.typeStr;
+  document.getElementById('mc-rarity').textContent  = c.rarity;
+
+  const manaEl = document.getElementById('mc-mana');
+  manaEl.innerHTML = '';
+  c.mana.forEach(m => {
+    const s = document.createElement('div');
+    s.className = 'msym ' + m.cls;
+    s.textContent = ({ gen: m.n, mW:'W', mU:'U', mB:'B', mR:'R', mG:'G', mA:'A' })[m.cls] ?? m.n;
+    manaEl.appendChild(s);
+  });
+
+  const box = document.getElementById('mc-box');
+  box.className = 'mtg-box' + (c.dark ? ' dk' : '');
+  document.getElementById('mc-kw').innerHTML  = c.kws.length ? `<em>${c.kws.join(', ')}</em>` : '';
+  document.getElementById('mc-ab').innerHTML  = c.ability.split('\n').map(l => `<div>${l}</div>`).join('');
+  document.getElementById('mc-flav').textContent = c.flavor ? `« ${c.flavor} »` : '';
+
+  setArt(document.getElementById('mc-img'), document.getElementById('mc-ph'), c.image, c.emoji);
+
+  const pt  = document.getElementById('mc-pt');
+  const loy = document.getElementById('mc-loy');
+  if (c.pt) { pt.textContent = `${c.pt.p}/${c.pt.t}`; pt.style.display = 'block'; loy.style.display = 'none'; }
+  else { pt.style.display = 'none'; loy.style.display = 'none'; }
+}
+
+/* ══════════════════════════════════════════
+   YU-GI-OH
+══════════════════════════════════════════ */
+
+const ATTRS = { DARK:'🌑', LIGHT:'☀️', FIRE:'🔥', WATER:'💧', EARTH:'🌍', WIND:'💨', DIVINE:'✨' };
+const YGO_LABELS = { normal:'Normal Monster', effect:'Effect Monster', ritual:'Ritual Monster', fusion:'Fusion Monster', synchro:'Synchro Monster', xyz:'Xyz Monster', link:'Link Monster', spell:'Spell Card', trap:'Trap Card' };
+
+function ygoKind(category, desc, h) {
+  const d = desc.toLowerCase();
+  if (category === 'event')   return /piège|embuscade|trahison/.test(d) ? 'trap' : 'spell';
+  if (category === 'work')    return 'spell';
+  if (category === 'concept') return h % 2 === 0 ? 'spell' : 'trap';
+  if (category === 'place')   return 'spell';
+  if (category === 'object')  return 'spell';
+  if (category === 'animal' && /dragon/.test(d) && h % 5 === 0) return 'fusion';
+  if (category === 'person' && /dieu|déesse|divin/.test(d)) return 'ritual';
+  return h % 8 === 0 ? 'normal' : 'effect';
+}
+
+function ygoAttr(category, desc, cats) {
+  const d = desc.toLowerCase();
+  if (category === 'place') {
+    if (/île|océan|mer|lac|fleuve/.test(d)) return 'WATER';
+    if (/montagne|volcan|désert/.test(d))   return 'FIRE';
+    return 'EARTH';
+  }
+  if (category === 'animal') {
+    if (/aquatique|marin|poisson|baleine/.test(d)) return 'WATER';
+    if (/dragon|serpent/.test(d))                  return 'FIRE';
+    if (/nocturne|chauve-souris/.test(d))          return 'DARK';
+    if (/aigle|faucon|oiseau/.test(d))             return 'WIND';
+    return 'EARTH';
+  }
+  if (category === 'person') {
+    if (/saint|divin|ange|roi|reine/.test(d))  return 'LIGHT';
+    if (/assassin|tyran|dictateur/.test(d))    return 'DARK';
+    if (/militaire|guerrier|général/.test(d))  return 'FIRE';
+    if (/scientifique|inventeur/.test(d))      return 'WIND';
+    return 'EARTH';
+  }
+  if (category === 'event') return /épidémie|poison/.test(d) ? 'DARK' : 'FIRE';
+  return 'EARTH';
+}
+
+function ygoRace(category, subtype, desc) {
+  const d = desc.toLowerCase();
+  if (category === 'place' || category === 'event' || category === 'work' || category === 'concept' || category === 'object') return 'Magie';
+  const map = { Dragon:'Dragon', Snake:'Reptile', Spider:'Insecte', Bird:'Oiseau', Fish:'Poisson', Insect:'Insecte', Wolf:'Bête', Cat:'Bête', Bear:'Bête', Beast:'Bête', Dinosaur:'Dinosaure', Ape:'Bête', Horse:'Bête', Lizard:'Reptile', 'Human Noble':'Guerrier', 'Human Soldier':'Guerrier', 'Human Wizard':'Magicien', 'Human Cleric':'Magicien', 'Human Advisor':'Magicien', 'Human Rogue':'Guerrier', 'Human Warrior':'Guerrier', Human:'Guerrier' };
+  return map[subtype] || 'Guerrier';
+}
+
+function ygoLevel(category, desc, h) {
+  if (['place','event','work','concept','object'].includes(category)) return null;
+  const d = desc.toLowerCase();
+  if (/dragon/.test(d))                      return range(7, 12, h);
+  if (/roi|reine|emperor|légendaire/.test(d)) return range(6, 9, h);
+  if (/général|amiral/.test(d))              return range(5, 8, h);
+  if (/scientifique|philosophe/.test(d))     return range(3, 6, h);
+  if (/insecte|araignée/.test(d))            return range(1, 4, h);
+  return range(3, 7, h);
+}
+
+function ygoStats(desc, level, h) {
+  if (!level) return null;
+  const d = desc.toLowerCase();
+  let atk = level * 300, def = level * 250;
+  if (/dragon/.test(d))                      { atk += 800; def += 300; }
+  else if (/guerrier|militaire|général/.test(d)) { atk += 400; }
+  else if (/scientifique|philosophe/.test(d))    { atk -= 200; def += 500; }
+  else if (/roi|reine|noble/.test(d))            { atk += 200; def += 400; }
+  else if (/assassin|espion/.test(d))            { atk += 600; def -= 100; }
+  atk = Math.min(5000, Math.round(Math.max(0, atk) / 50) * 50);
+  def = Math.min(5000, Math.round(Math.max(0, def) / 50) * 50);
+  return { atk, def };
+}
+
+function ygoEffect(category, subtype, desc, kind, h) {
+  const d = desc.toLowerCase();
+
+  if (category === 'place') {
+    if (/île|océan|mer|lac|fleuve/.test(d))
+      return `Sort de Terrain.\nTant que cette carte est sur le Terrain, tous les monstres EAU gagnent 500 ATK/DEF. Une fois par tour : vous pouvez piocher 1 carte.`;
+    if (/montagne|volcan/.test(d))
+      return `Sort de Terrain.\nTant que cette carte est sur le Terrain, tous les monstres FEU gagnent 500 ATK. Une fois par tour : infligez 500 LP de dommages à votre adversaire.`;
+    if (/forêt|jungle/.test(d))
+      return `Sort de Terrain.\nTant que cette carte est sur le Terrain, tous les monstres de type Bête gagnent 500 ATK/DEF. Vous pouvez Invoquer Spécialement 1 monstre Bête depuis votre main.`;
+    return `Sort de Terrain.\nTant que cette carte est sur le Terrain, tous vos monstres gagnent 300 ATK/DEF. Une fois par tour : piochez 1 carte.`;
+  }
+
+  if (category === 'event') {
+    if (/épidémie|pandémie|peste/.test(d))
+      return `Activez cette carte : détruisez la moitié des monstres sur le Terrain (au choix de votre adversaire pour ses monstres). Votre adversaire perd 500 LP pour chaque monstre détruit ainsi.`;
+    if (/bataille|guerre/.test(d))
+      return `Activez cette carte : tous les monstres que vous contrôlez peuvent attaquer directement ce tour. Infligez des dommages égaux à l'ATK de chaque monstre qui attaque directement.`;
+    if (/révolution|insurrection/.test(d))
+      return `Activez cette carte : prenez le contrôle de tous les monstres adverses jusqu'à la fin du tour. Ces monstres peuvent attaquer directement ce tour.`;
+    return `Activez cette carte : détruisez jusqu'à ${range(2,4,h)} cartes sur le Terrain. Piochez 1 carte pour chaque carte détruite.`;
+  }
+
+  if (category === 'object') {
+    if (/épée|lance|arme/.test(d))
+      return `Équipement. Le monstre équipé gagne ${range(3,8,h)*100} ATK. Si le monstre équipé détruit un monstre au combat : piochez 1 carte.`;
+    if (/bouclier|armure/.test(d))
+      return `Équipement. Le monstre équipé gagne ${range(3,6,h)*100} DEF et ne peut pas être ciblé par les effets adverses.`;
+    return `Équipement. Le monstre équipé gagne ${range(2,5,h)*100} ATK/DEF. Une fois par tour : vous pouvez cibler et détruire 1 carte adverse.`;
+  }
+
+  if (category === 'work') {
+    if (/film|série/.test(d)) return `Activez cette carte : piochez 2 cartes. Si vous contrôlez 3 monstres ou plus, infligez 1000 LP de dommages à votre adversaire.`;
+    if (/roman|livre/.test(d)) return `Activez cette carte : cherchez 1 Sort ou Piège dans votre Deck et ajoutez-le à votre main.`;
+    return `Activez cette carte : piochez ${range(1,3,h)} carte(s). Défaussez-vous de 1 carte.`;
+  }
+
+  if (category === 'concept')
+    return `Activez cette carte en payant 1000 LP : cherchez 1 carte dans votre Deck et ajoutez-la à votre main. Vous ne pouvez activer qu'1 exemplaire de cette carte par tour.`;
+
+  // Créature
+  if (kind === 'normal') return '';
+
+  if (category === 'person') {
+    if (/roi|reine|emperor/.test(d))
+      return `Lorsque cette carte est Invoquée : Invoquez Spécialement 1 monstre depuis votre Deck avec moins d'ATK que cette carte. Une fois par tour : tous vos monstres gagnent 300 ATK jusqu'à la fin du tour.`;
+    if (/général|militaire/.test(d))
+      return `Lorsque cette carte attaque : elle gagne 500 ATK jusqu'à la fin du tour. Si cette carte détruit un monstre adverse au combat : Invoquez Spécialement 1 monstre Guerrier depuis votre main.`;
+    if (/scientifique|inventeur/.test(d))
+      return `Une fois par tour : placez 1 compteur Recherche sur cette carte (max. 3). Vous pouvez retirer tous les compteurs : piochez 1 carte par compteur retiré ainsi.`;
+    if (/philosophe|auteur|écrivain/.test(d))
+      return `Lorsque cette carte est Invoquée : piochez 2 cartes, puis défaussez-vous de 1 carte. Une fois par tour : révélez 1 carte de votre main pour piocher 1 carte.`;
+  }
+
+  if (category === 'animal') {
+    if (/dragon/.test(d))
+      return `Lorsque cette carte est Invoquée Spécialement : infligez 800 LP de dommages à votre adversaire. Une fois par tour : détruisez 1 carte que contrôle votre adversaire.`;
+    if (/venimeux|serpent|araignée/.test(d))
+      return `Tout monstre battu au combat par cette carte est envoyé au Cimetière à la fin du Damage Step. Infligez 500 LP pour chaque monstre détruit ainsi.`;
+    if (/aquatique|marin/.test(d))
+      return `Cette carte ne peut pas être ciblée par les effets adverses. Une fois par tour : piochez 1 carte si vous contrôlez un autre monstre EAU.`;
+  }
+
+  return `Lorsque cette carte est Invoquée Normalement : piochez 1 carte. Une fois par tour : ciblez 1 monstre sur le Terrain, il perd 500 ATK/DEF jusqu'à la fin du tour.`;
+}
+
+function ygoBracket(kind, race, category, desc, h) {
+  const d = desc.toLowerCase();
+  if (category === 'place')   return `[Sort — Terrain]`;
+  if (category === 'event')   return /piège|embuscade|trahison/.test(d) ? `[Piège — ${pick(['Normal','Continu','Contre'],h)}]` : `[Sort — ${pick(['Normal','Déclenchement Rapide'],h)}]`;
+  if (category === 'work')    return `[Sort — Normal]`;
+  if (category === 'concept') return `[Sort — Continu]`;
+  if (category === 'object')  return /épée|arme|bouclier|armure/.test(d) ? `[Sort — Équipement]` : `[Sort — Normal]`;
+  const ext = { fusion:' / Fusion', synchro:' / Synchro', xyz:' / Xyz', link:' / Lien', ritual:' / Rituel' };
+  return `[Monstre ${race}${ext[kind]||''} / ${kind === 'normal' ? 'Normal' : 'Effet'}]`;
+}
+
+/* ══════════════════════════════════════════
+   BUILD YGO
+══════════════════════════════════════════ */
+
+function buildYGO(summary, cats) {
+  const h        = hash(summary.title || 'X');
+  const desc     = summary.description || '';
+  const category = detectCategory(summary, cats);
+  const subtype  = category === 'person' ? getPersonSubtype(desc, cats) : category === 'animal' ? getAnimalSubtype(desc) : '';
+  const kind     = ygoKind(category, desc, h);
+  const attr     = ygoAttr(category, desc, cats);
+  const race     = ygoRace(category, subtype, desc);
+  const level    = ygoLevel(category, desc, h);
+  const stats    = ygoStats(desc, level, h+1);
+  const eff      = ygoEffect(category, subtype, desc, kind, h+2);
+  const bracket  = ygoBracket(kind, race, category, desc, h+3);
+  const flavor   = kind === 'normal' ? (summary.description || '') : '';
+
+  return { name: (summary.title||'').slice(0,28), kind, attr, level, race, stats, eff, flavor, bracket, category, isXYZ: kind==='xyz', isLink: kind==='link', linkN: kind==='link' ? range(1,4,h) : null, serial: String(Math.abs(h)).padStart(8,'0').slice(0,8), image: summary.thumbnail?.source||null, url: summary.content_urls?.desktop?.page||'#', emoji: ATTRS[attr]||'🐉' };
+}
+
+/* ══════════════════════════════════════════
+   RENDER YGO
+══════════════════════════════════════════ */
+
+function renderYGO(c) {
+  document.getElementById('yc').className = 'ygo-card ' + c.kind;
+  document.getElementById('yc-name').textContent = c.name;
+  document.getElementById('yc-attr').textContent = ATTRS[c.attr] || '🌍';
+  setArt(document.getElementById('yc-img'), document.getElementById('yc-ph'), c.image, c.emoji);
+
+  const starsEl = document.getElementById('yc-stars');
+  starsEl.innerHTML = '';
+  if (c.level && !c.isXYZ && !c.isLink) {
+    for (let i = 0; i < c.level; i++) { const s = document.createElement('span'); s.className = 'ygo-star'; s.textContent = '★'; starsEl.appendChild(s); }
+  } else if (c.isXYZ && c.level) {
+    for (let i = 0; i < c.level; i++) { const s = document.createElement('span'); s.className = 'ygo-star rk'; s.textContent = '✦'; starsEl.appendChild(s); }
+  } else if (c.isLink) {
+    const s = document.createElement('span'); s.className = 'ygo-star lk'; s.textContent = 'LINK-' + c.linkN; starsEl.appendChild(s);
+  }
+
+  document.getElementById('yc-subtype').textContent = YGO_LABELS[c.kind] || c.kind;
+  document.getElementById('yc-bracket').textContent = c.bracket;
+  document.getElementById('yc-eff').innerHTML = c.eff.split('\n').map(l => `<div>${l}</div>`).join('');
+  document.getElementById('yc-flav').textContent = c.flavor || '';
+
+  const statsEl = document.getElementById('yc-stats');
+  statsEl.innerHTML = '';
+  if (c.stats) {
+    const a = document.createElement('div'); a.className = 'ygo-stat'; a.innerHTML = `ATK / <span>${c.stats.atk}</span>`; statsEl.appendChild(a);
+    const dv = document.createElement('div'); dv.className = 'ygo-stat'; dv.innerHTML = `DEF / <span>${c.stats.def}</span>`; statsEl.appendChild(dv);
+  }
+  document.getElementById('yc-serial').textContent = c.serial;
+}
+
+/* ══ Image ══ */
+function setArt(img, ph, src, emoji) {
+  if (src) {
+    img.src = src; img.style.display = 'block'; ph.style.display = 'none';
+    img.onerror = () => { img.style.display = 'none'; ph.textContent = emoji; ph.style.display = 'flex'; };
+  } else {
+    img.style.display = 'none'; ph.textContent = emoji; ph.style.display = 'flex';
+  }
+}
+
+/* ══ Mode switch ══ */
+let currentData = null, currentCats = [], currentMode = 'mtg';
+
+function switchMode(mode) {
+  currentMode = mode;
+  document.getElementById('btnMTG').className = 'mode-btn' + (mode === 'mtg' ? ' m-active' : '');
+  document.getElementById('btnYGO').className = 'mode-btn' + (mode === 'ygo' ? ' y-active' : '');
+  document.getElementById('view-mtg').classList.toggle('hidden', mode !== 'mtg');
+  document.getElementById('view-ygo').classList.toggle('hidden', mode !== 'ygo');
+  if (currentData) { if (mode === 'mtg') renderMTG(buildMTG(currentData, currentCats)); else renderYGO(buildYGO(currentData, currentCats)); }
+}
+
+/* ══ Loading ══ */
+function setLoading(on) {
+  document.getElementById('loader').classList.toggle('hidden', !on);
+  ['bGen','bRand','bDaily'].forEach(id => { document.getElementById(id).disabled = on; });
+}
+
+function showErr(msg) {
+  const e = document.getElementById('err'); e.textContent = msg; e.classList.remove('hidden');
+}
+
+/* ══ Chargement carte ══ */
+async function loadCard(summaryPromise) {
+  document.getElementById('out').classList.add('hidden');
+  document.getElementById('err').classList.add('hidden');
+  setLoading(true);
+  try {
+    const data = await summaryPromise;
+    const cats = await fetchCategories(data.title);
+    currentData = data; currentCats = cats;
+    document.getElementById('q').value = data.title || '';
+    document.getElementById('wikiLink').href = data.content_urls?.desktop?.page || '#';
+    if (currentMode === 'mtg') renderMTG(buildMTG(data, cats));
+    else                        renderYGO(buildYGO(data, cats));
+    document.getElementById('out').classList.remove('hidden');
+  } catch (e) { showErr(e.message); }
+  finally { setLoading(false); }
+}
+
+/* ══ Carte du jour ══ */
+async function goDaily() {
+  const today = new Date();
+  const seed  = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const cached = localStorage.getItem('wikitcg-daily-date');
+  const cachedTitle = localStorage.getItem('wikitcg-daily-title');
+  if (cached === String(seed) && cachedTitle) { loadCard(fetchWiki(cachedTitle)); return; }
+  document.getElementById('out').classList.add('hidden');
+  document.getElementById('err').classList.add('hidden');
+  setLoading(true);
+  try {
+    const data = await fetchRandom();
+    localStorage.setItem('wikitcg-daily-date', String(seed));
+    localStorage.setItem('wikitcg-daily-title', data.title);
+    const cats = await fetchCategories(data.title);
+    currentData = data; currentCats = cats;
+    document.getElementById('q').value = data.title || '';
+    document.getElementById('wikiLink').href = data.content_urls?.desktop?.page || '#';
+    if (currentMode === 'mtg') renderMTG(buildMTG(data, cats));
+    else                        renderYGO(buildYGO(data, cats));
+    document.getElementById('out').classList.remove('hidden');
+  } catch (e) { showErr(e.message); }
+  finally { setLoading(false); }
+}
+
+/* ══ Events ══ */
+document.getElementById('bGen').addEventListener('click', () => { const q = document.getElementById('q').value.trim(); if (q) loadCard(fetchWiki(q)); });
+document.getElementById('bRand').addEventListener('click', () => loadCard(fetchRandom()));
+document.getElementById('bDaily').addEventListener('click', goDaily);
+document.getElementById('q').addEventListener('keydown', e => { if (e.key === 'Enter') { const q = document.getElementById('q').value.trim(); if (q) loadCard(fetchWiki(q)); } });
