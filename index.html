@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Typographie Vivante</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Barlow:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="logo">Typographie <em>Vivante</em></div>
+  <a class="nav-gh" href="https://github.com" target="_blank">GitHub ↗</a>
+</nav>
+
+<main class="body">
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-row">
+      <input type="text" id="wiki-input" placeholder="Article Wikipedia… (ex: jazz, fromage, Darwin)">
+      <button class="btn-icon" id="btn-search">⌕</button>
+    </div>
+    <div class="suggestions" id="suggestions"></div>
+    <div class="selected-label">
+      <span class="dot"></span>
+      <span id="sel-label">Article aléatoire</span>
+      <button class="btn-clear" id="btn-clear">✕</button>
+    </div>
+  </div>
+
+  <!-- WORD MODE -->
+  <label class="wordmode">
+    <input type="checkbox" id="chk-word">
+    <span class="pill"></span>
+    Dessiner un mot
+  </label>
+  <input type="text" id="word-input" class="word-input" placeholder="Ex: FROMAGE" maxlength="20">
+
+  <!-- SHAPES -->
+  <div class="shape-row">
+    <button class="shape-btn active" data-shape="bird"    title="Oiseau">🕊</button>
+    <button class="shape-btn"        data-shape="circle"  title="Cercle">○</button>
+    <button class="shape-btn"        data-shape="star"    title="Étoile">☆</button>
+    <button class="shape-btn"        data-shape="heart"   title="Cœur">♡</button>
+    <button class="shape-btn"        data-shape="wave"    title="Vague">〜</button>
+    <button class="shape-btn"        data-shape="fish"    title="Poisson">🐟</button>
+    <button class="shape-btn"        data-shape="spiral"  title="Spirale">◎</button>
+    <button class="shape-btn"        data-shape="tree"    title="Arbre">🌲</button>
+    <button class="shape-btn"        data-shape="random"  title="Aléatoire">⚄</button>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="btn primary" id="btn-gen">✦ Générer</button>
+    <button class="btn" id="btn-color">Couleur : Mono</button>
+    <button class="btn" id="btn-export">Exporter SVG</button>
+  </div>
+
+  <!-- CANVAS -->
+  <div class="canvas-wrap">
+    <div class="shimmer" id="shimmer"></div>
+    <svg id="svg-output" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <text x="250" y="260" text-anchor="middle" fill="#8a8278"
+        font-family="DM Mono,monospace" font-size="10" letter-spacing="0.25em">
+        CLIQUEZ SUR GÉNÉRER
+      </text>
+    </svg>
+    <div class="status">
+      <span><span class="sdot" id="sdot"></span><span id="stext">Prêt</span></span>
+      <span>Source : <a href="#" id="wiki-link" target="_blank">Wikipedia</a></span>
+    </div>
+  </div>
+
+  <!-- WIKI PANEL -->
+  <div class="wiki-panel" id="wiki-panel">
+    <div class="wiki-title" id="wiki-panel-title">—</div>
+    <div class="wiki-excerpt" id="wiki-excerpt"></div>
+  </div>
+
+</main>
+
+<footer>Typographie Vivante — Données Wikipedia (CC BY-SA)</footer>
+
+<script type="module">
+  import { SHAPES, generateRandom } from './shapes.js';
+  import { searchWiki, fetchWikiByTitle, fetchWikiRandom } from './wiki.js';
+  import { render, exportSVG } from './render.js';
+
+  // ── STATE ──
+  let currentShape = 'bird';
+  let colorMode = 0;
+  const colorModes  = ['mono', 'gold', 'spectrum'];
+  const colorLabels = ['Mono', 'Or', 'Spectre'];
+  let selectedTitle = null;
+  let loading = false;
+
+  // ── SEARCH ──
+  const wikiInput = document.getElementById('wiki-input');
+  const suggBox   = document.getElementById('suggestions');
+  const selLabel  = document.getElementById('sel-label');
+  const btnClear  = document.getElementById('btn-clear');
+  let searchTimer = null;
+
+  wikiInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    const q = wikiInput.value.trim();
+    if (q.length < 2) { suggBox.style.display = 'none'; return; }
+    searchTimer = setTimeout(async () => {
+      const res = await searchWiki(q);
+      renderSugg(res);
+    }, 320);
+  });
+
+  document.getElementById('btn-search').addEventListener('click', async () => {
+    const q = wikiInput.value.trim();
+    if (!q) return;
+    renderSugg(await searchWiki(q));
+  });
+
+  function renderSugg(results) {
+    if (!results.length) {
+      suggBox.innerHTML = '<div class="sug-item muted">Aucun résultat</div>';
+      suggBox.style.display = 'block'; return;
+    }
+    suggBox.innerHTML = results
+      .map(r => `<div class="sug-item" data-t="${r.replace(/"/g,'&quot;')}">${r}</div>`)
+      .join('');
+    suggBox.style.display = 'block';
+    suggBox.querySelectorAll('.sug-item[data-t]').forEach(el =>
+      el.addEventListener('click', () => selectWiki(el.dataset.t))
+    );
+  }
+
+  function selectWiki(title) {
+    selectedTitle = title;
+    selLabel.textContent = title;
+    btnClear.style.display = 'inline-block';
+    suggBox.style.display = 'none';
+    wikiInput.value = '';
+    const wi = document.getElementById('word-input');
+    if (document.getElementById('chk-word').checked && !wi.value.trim())
+      wi.value = title.toUpperCase().slice(0, 14);
+  }
+
+  btnClear.addEventListener('click', () => {
+    selectedTitle = null;
+    selLabel.textContent = 'Article aléatoire';
+    btnClear.style.display = 'none';
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) suggBox.style.display = 'none';
+  });
+
+  // ── WORD MODE ──
+  document.getElementById('chk-word').addEventListener('change', e => {
+    document.getElementById('word-input').style.display = e.target.checked ? 'block' : 'none';
+  });
+
+  // ── SHAPES ──
+  document.querySelectorAll('.shape-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentShape = btn.dataset.shape;
+    });
+  });
+
+  // ── GENERATE ──
+  document.getElementById('btn-gen').addEventListener('click', async () => {
+    if (loading) return;
+    loading = true;
+    const shimmer = document.getElementById('shimmer');
+    const sdot    = document.getElementById('sdot');
+    const stext   = document.getElementById('stext');
+    const btnGen  = document.getElementById('btn-gen');
+    shimmer.classList.add('on');
+    sdot.classList.add('on');
+    stext.textContent = 'Chargement Wikipedia…';
+    btnGen.disabled = true;
+
+    try {
+      const wikiData = selectedTitle
+        ? await fetchWikiByTitle(selectedTitle)
+        : await fetchWikiRandom();
+
+      stext.textContent = 'Composition…';
+      const paths = currentShape === 'random' ? generateRandom() : SHAPES[currentShape];
+      render(paths, wikiData, colorModes[colorMode]);
+
+      document.getElementById('wiki-panel-title').textContent = wikiData.title;
+      document.getElementById('wiki-excerpt').textContent = wikiData.text.slice(0, 300) + '…';
+      document.getElementById('wiki-link').href = `https://fr.wikipedia.org/?curid=${wikiData.pageId}`;
+      document.getElementById('wiki-link').textContent = wikiData.title;
+      document.getElementById('wiki-panel').classList.add('open');
+      stext.textContent = `"${wikiData.title}" · ${wikiData.text.split(' ').length} mots`;
+    } catch (e) {
+      stext.textContent = 'Erreur — réessayez';
+      console.error(e);
+    }
+
+    shimmer.classList.remove('on');
+    sdot.classList.remove('on');
+    btnGen.disabled = false;
+    loading = false;
+  });
+
+  // ── COLOR ──
+  document.getElementById('btn-color').addEventListener('click', () => {
+    colorMode = (colorMode + 1) % colorModes.length;
+    document.getElementById('btn-color').textContent = `Couleur : ${colorLabels[colorMode]}`;
+  });
+
+  // ── EXPORT ──
+  document.getElementById('btn-export').addEventListener('click', () => exportSVG());
+</script>
+</body>
+</html>
