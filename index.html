@@ -3,365 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WikiTCG — Card Studio</title>
+<title>WikiTCG — Chaque article devient une carte</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- ══ TOPBAR ══ -->
-<header class="topbar">
-  <div class="topbar-logo">
-    <div class="topbar-logo-mark">W</div>
-    <span class="topbar-wordmark">WIKITCG</span>
-  </div>
+<button class="theme-toggle" id="themeBtn" aria-label="Changer de thème">☽</button>
 
-  <div class="topbar-divider"></div>
-
-  <nav class="topbar-nav">
-    <button class="topbar-nav-item">Studio</button>
-    <button class="topbar-nav-item">Galerie</button>
-    <button class="topbar-nav-item">À propos</button>
-  </nav>
-
-  <div class="topbar-right">
-    <button class="topbar-icon-btn" id="themeBtn" aria-label="Changer de thème">☽</button>
-  </div>
+<header>
+  <div class="header-ornament"><span>✦ WIKITCG ✦</span></div>
+  <h1>WikiTCG</h1>
+  <p>Chaque article Wikipédia devient une carte</p>
 </header>
 
-<!-- ══ EDITOR ══ -->
-<div class="editor-layout">
-
-  <!-- ══ PANNEAU GAUCHE ══ -->
-  <aside class="panel-left">
-
-    <!-- Recherche -->
-    <div class="panel-block">
-      <div class="panel-block-header">
-        <div class="panel-block-icon">⚔</div>
-        <span class="panel-block-title">Invoquer une carte</span>
-      </div>
-
-      <div class="search-wrap">
-        <span class="search-icon">⚔</span>
-        <input id="q" type="text" placeholder="Napoléon, Kraken, Tour Eiffel…"
-               autocomplete="off" spellcheck="false">
-      </div>
-
-      <button class="btn-invoke" id="bGen">
-        <span>✦</span> Invoquer
-      </button>
-
-      <div class="btn-row">
-        <button class="btn-secondary btn-blue" id="bDaily">📅 Jour</button>
-        <button class="btn-secondary" id="bRand">⚄ Aléatoire</button>
-      </div>
+<section class="ui" aria-label="Recherche">
+  <div class="search-row">
+    <div class="search-wrap">
+      <span class="search-icon">⚔</span>
+      <input id="q" type="text" placeholder="Napoléon, Kraken, Tour Eiffel…" autocomplete="off" spellcheck="false">
     </div>
+    <button class="btn btn-invoke" id="bGen">Invoquer</button>
+  </div>
+  <div class="extra-btns">
+    <button class="btn btn-daily" id="bDaily">📅 Carte du jour</button>
+    <button class="btn btn-rand" id="bRand">⚄ Aléatoire</button>
+  </div>
+</section>
 
-    <!-- Mode switch -->
-    <div class="panel-block">
-      <div class="panel-block-header">
-        <div class="panel-block-icon">◈</div>
-        <span class="panel-block-title">Format</span>
-      </div>
-      <div class="mode-tabs" role="tablist">
-        <button class="mode-tab m-active" id="btnMTG" role="tab" onclick="switchMode('mtg')">
-          <span>⚔</span> Magic
-        </button>
-        <button class="mode-tab" id="btnYGO" role="tab" onclick="switchMode('ygo')">
-          <span>★</span> Yu-Gi-Oh
-        </button>
-      </div>
-    </div>
-
-    <!-- Loader (dans panneau gauche en mobile, dans center sinon) -->
-    <div id="loader-left" class="panel-block hidden">
-      <div class="loader">
-        <div class="loader-ring"></div>
-        <div class="loader-txt">Invocation…</div>
-      </div>
-    </div>
-
-    <!-- Card info (populated by JS) -->
-    <div class="panel-block" id="card-meta" style="display:none">
-      <div class="panel-block-header">
-        <div class="panel-block-icon">◉</div>
-        <span class="panel-block-title">Informations</span>
-      </div>
-      <div id="meta-rows"></div>
-    </div>
-
-  </aside>
-
-  <!-- ══ PANNEAU CENTRE ══ -->
-  <main class="panel-center">
-
-    <!-- Loader -->
-    <div id="loader" class="loader hidden" aria-live="polite">
-      <div class="loader-ring"></div>
-      <div class="loader-txt">Consultation des archives…</div>
-    </div>
-
-    <!-- Error -->
-    <div id="err" class="err hidden" role="alert"></div>
-
-    <!-- Empty state -->
-    <div id="empty-state" class="empty-state card-stage">
-      <div class="empty-icon">✦</div>
-      <div class="empty-title">Aucune carte invoquée</div>
-      <div class="empty-sub">Recherchez un article Wikipédia pour générer votre carte</div>
-    </div>
-
-    <!-- Card output -->
-    <div id="out" class="card-zone hidden">
-      <div class="card-stage" id="card-stage-inner">
-
-        <div id="view-mtg" role="tabpanel">
-          <div class="mtg-card" id="mc">
-            <div class="mtg-texture"></div>
-            <div class="mtg-top">
-              <span class="mtg-name" id="mc-name"></span>
-              <div class="mtg-mana" id="mc-mana"></div>
-            </div>
-            <div class="mtg-art-frame">
-              <img id="mc-img" src="" alt="" loading="lazy">
-              <div class="mtg-art-ph" id="mc-ph"></div>
-            </div>
-            <div class="mtg-type-bar">
-              <span class="mtg-type-txt" id="mc-typetxt"></span>
-              <span class="mtg-rarity" id="mc-rarity"></span>
-            </div>
-            <div class="mtg-box" id="mc-box">
-              <div class="mtg-rules" id="mc-rules">
-                <div class="mtg-kw" id="mc-kw"></div>
-                <div class="mtg-ab" id="mc-ab"></div>
-              </div>
-              <div class="mtg-flav" id="mc-flav"></div>
-            </div>
-            <div class="mtg-foot">
-              <span class="mtg-set-sym" id="mc-set">WIKITCG • FR</span>
-              <div class="mtg-pt-wrap">
-                <span class="mtg-pt" id="mc-pt"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="view-ygo" class="hidden" role="tabpanel">
-          <div class="ygo-card" id="yc">
-            <div class="ygo-header">
-              <span class="ygo-name" id="yc-name"></span>
-              <div class="ygo-attr" id="yc-attr"></div>
-            </div>
-            <div class="ygo-level-row" id="yc-level-row">
-              <div class="ygo-stars" id="yc-stars"></div>
-            </div>
-            <div class="ygo-art-outer">
-              <div class="ygo-art-inner">
-                <img id="yc-img" src="" alt="" loading="lazy">
-                <div class="ygo-art-ph" id="yc-ph"></div>
-              </div>
-            </div>
-            <div class="ygo-type-bar">
-              <span class="ygo-subtype-lbl" id="yc-subtype"></span>
-            </div>
-            <div class="ygo-textbox">
-              <div class="ygo-bracket" id="yc-bracket"></div>
-              <div class="ygo-eff" id="yc-eff"></div>
-              <div class="ygo-flav" id="yc-flav"></div>
-            </div>
-            <div class="ygo-stats" id="yc-stats"></div>
-            <div class="ygo-foot">
-              <div class="ygo-holo-wrap">
-                <div class="ygo-holo"></div>
-              </div>
-              <span class="ygo-serial" id="yc-serial"></span>
-              <span class="ygo-copy">©WIKITCG</span>
-            </div>
-          </div>
-        </div>
-
-        <a class="wiki-link" id="wikiLink" href="#" target="_blank" rel="noopener noreferrer">
-          <span>↗</span> Lire l'article Wikipédia
-        </a>
-
-      </div>
-    </div>
-
-  </main>
-
-  <!-- ══ PANNEAU DROIT ══ -->
-  <aside class="panel-right" id="panel-right">
-
-    <!-- Effet / texte de carte -->
-    <div class="panel-block" id="panel-effect" style="display:none">
-      <div class="panel-block-header">
-        <div class="panel-block-icon">✦</div>
-        <span class="panel-block-title">Effet de la carte</span>
-      </div>
-      <div class="effect-box" id="right-effect"></div>
-      <div class="flavor-text" id="right-flavor"></div>
-    </div>
-
-    <!-- Stats (MTG P/T ou YGO ATK/DEF) -->
-    <div class="panel-block" id="panel-stats" style="display:none">
-      <div class="panel-block-header">
-        <div class="panel-block-icon">◈</div>
-        <span class="panel-block-title">Statistiques</span>
-      </div>
-      <div id="right-stats"></div>
-    </div>
-
-    <!-- Keywords -->
-    <div class="panel-block" id="panel-kw" style="display:none">
-      <div class="panel-block-header">
-        <div class="panel-block-icon">◆</div>
-        <span class="panel-block-title">Capacités</span>
-      </div>
-      <div class="kw-chips" id="right-kw"></div>
-    </div>
-
-    <!-- Empty right panel -->
-    <div id="right-empty" class="panel-block">
-      <div style="padding: 30px 0; text-align:center;">
-        <div style="font-size:1.6rem; opacity:.2; margin-bottom:10px;">◈</div>
-        <div style="font-family:var(--font-ui); font-size:.58rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--text-3);">Détails de la carte</div>
-        <div style="font-family:var(--font-body); font-style:italic; font-size:.8rem; color:var(--text-3); margin-top:6px; line-height:1.6;">Apparaîtront ici<br>après invocation</div>
-      </div>
-    </div>
-
-  </aside>
-
+<div id="loader" class="loader hidden" aria-live="polite">
+  <div class="loader-inner">
+    <div class="loader-rune">᛭</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <p class="loader-txt">Consultation des archives…</p>
+  </div>
 </div>
 
-<!-- ══ STATUS BAR ══ -->
-<div class="statusbar">
-  <div class="status-item">
-    <div class="status-dot" id="api-dot"></div>
-    Wikipédia
+<div id="err" class="err hidden" role="alert"></div>
+
+<div id="out" class="card-zone hidden">
+  <div class="mode-switch" role="tablist">
+    <button class="mode-btn m-active" id="btnMTG" role="tab" onclick="switchMode('mtg')">
+      <span class="mode-icon">⚔</span> Magic: the Gathering
+    </button>
+    <button class="mode-btn" id="btnYGO" role="tab" onclick="switchMode('ygo')">
+      <span class="mode-icon">★</span> Yu-Gi-Oh!
+    </button>
   </div>
-  <div class="status-item">
-    <div class="status-dot" id="ygo-dot"></div>
-    YGOPro API
+
+  <div id="view-mtg" role="tabpanel">
+    <div class="mtg-card" id="mc">
+      <div class="mtg-texture"></div>
+      <div class="mtg-top">
+        <span class="mtg-name" id="mc-name"></span>
+        <div class="mtg-mana" id="mc-mana"></div>
+      </div>
+      <div class="mtg-art-frame">
+        <img id="mc-img" src="" alt="" loading="lazy">
+        <div class="mtg-art-ph" id="mc-ph"></div>
+      </div>
+      <div class="mtg-type-bar">
+        <span class="mtg-type-txt" id="mc-typetxt"></span>
+        <span class="mtg-rarity" id="mc-rarity"></span>
+      </div>
+      <div class="mtg-box" id="mc-box">
+        <div class="mtg-rules" id="mc-rules">
+          <div class="mtg-kw" id="mc-kw"></div>
+          <div class="mtg-ab" id="mc-ab"></div>
+        </div>
+        <div class="mtg-flav" id="mc-flav"></div>
+      </div>
+      <div class="mtg-foot">
+        <span class="mtg-set-sym" id="mc-set">WIKITCG • FR</span>
+        <div class="mtg-pt-wrap">
+          <span class="mtg-pt" id="mc-pt"></span>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="status-spacer"></div>
-  <div class="status-item" id="status-card-name" style="color:var(--text-2)"></div>
-  <div class="status-item" style="opacity:.4">WIKITCG v4</div>
+
+  <div id="view-ygo" class="hidden" role="tabpanel">
+    <div class="ygo-card" id="yc">
+      <div class="ygo-header">
+        <span class="ygo-name" id="yc-name"></span>
+        <div class="ygo-attr" id="yc-attr"></div>
+      </div>
+      <div class="ygo-level-row" id="yc-level-row">
+        <div class="ygo-stars" id="yc-stars"></div>
+      </div>
+      <div class="ygo-art-outer">
+        <div class="ygo-art-inner">
+          <img id="yc-img" src="" alt="" loading="lazy">
+          <div class="ygo-art-ph" id="yc-ph"></div>
+        </div>
+      </div>
+      <div class="ygo-type-bar">
+        <span class="ygo-subtype-lbl" id="yc-subtype"></span>
+      </div>
+      <div class="ygo-textbox">
+        <div class="ygo-bracket" id="yc-bracket"></div>
+        <div class="ygo-eff" id="yc-eff"></div>
+        <div class="ygo-flav" id="yc-flav"></div>
+      </div>
+      <div class="ygo-stats" id="yc-stats"></div>
+      <div class="ygo-foot">
+        <div class="ygo-holo-wrap">
+          <div class="ygo-holo"></div>
+        </div>
+        <span class="ygo-serial" id="yc-serial"></span>
+        <span class="ygo-copy">©WIKITCG</span>
+      </div>
+    </div>
+  </div>
+
+  <a class="wiki-link" id="wikiLink" href="#" target="_blank" rel="noopener noreferrer">
+    <span>↗</span> Lire l'article Wikipédia
+  </a>
 </div>
 
 <script src="app.js"></script>
-<script>
-/* ── Patch : populate right panel & meta after render ── */
-const _origRenderMTG = renderMTG;
-renderMTG = function(c) {
-  _origRenderMTG(c);
-  populateRightPanel('mtg', c);
-  populateMeta('mtg', c);
-};
-
-const _origRenderYGO = renderYGO;
-renderYGO = function(c) {
-  _origRenderYGO(c);
-  populateRightPanel('ygo', c);
-  populateMeta('ygo', c);
-};
-
-function populateRightPanel(mode, c) {
-  document.getElementById('right-empty').style.display = 'none';
-
-  /* Effect */
-  const effEl = document.getElementById('right-effect');
-  const ability = c.ability || c.eff || '';
-  effEl.innerHTML = ability
-    ? ability.split('\n').map(l => `<span class="effect-line">${l}</span>`).join('')
-    : '<em style="color:var(--text-3)">—</em>';
-
-  const flav = c.flavor || '';
-  const flavEl = document.getElementById('right-flavor');
-  flavEl.textContent = flav ? `« ${flav} »` : '';
-  flavEl.style.display = flav ? '' : 'none';
-  document.getElementById('panel-effect').style.display = '';
-
-  /* Stats */
-  const statsEl = document.getElementById('right-stats');
-  statsEl.innerHTML = '';
-  if (mode === 'mtg' && c.pt) {
-    statsEl.innerHTML = `
-      <div class="stat-row">
-        <div class="stat-label">FOR</div>
-        <div class="stat-track"><div class="stat-fill" style="width:${Math.min(100, c.pt.p / 10 * 100)}%"></div></div>
-        <div class="stat-num">${c.pt.p}</div>
-      </div>
-      <div class="stat-row">
-        <div class="stat-label">RÉS</div>
-        <div class="stat-track"><div class="stat-fill" style="width:${Math.min(100, c.pt.t / 10 * 100)}%"></div></div>
-        <div class="stat-num">${c.pt.t}</div>
-      </div>`;
-    document.getElementById('panel-stats').style.display = '';
-  } else if (mode === 'ygo' && c.stats) {
-    statsEl.innerHTML = `
-      <div class="stat-row">
-        <div class="stat-label">ATK</div>
-        <div class="stat-track"><div class="stat-fill" style="width:${Math.min(100, c.stats.atk / 50)}%"></div></div>
-        <div class="stat-num">${c.stats.atk}</div>
-      </div>
-      <div class="stat-row">
-        <div class="stat-label">DEF</div>
-        <div class="stat-track"><div class="stat-fill" style="width:${Math.min(100, c.stats.def / 50)}%"></div></div>
-        <div class="stat-num">${c.stats.def}</div>
-      </div>`;
-    document.getElementById('panel-stats').style.display = '';
-  } else {
-    document.getElementById('panel-stats').style.display = 'none';
-  }
-
-  /* Keywords */
-  const kwEl = document.getElementById('right-kw');
-  const kws = c.kws || [];
-  if (kws.length) {
-    kwEl.innerHTML = kws.map(k => `<span class="kw-chip">${k}</span>`).join('');
-    document.getElementById('panel-kw').style.display = '';
-  } else {
-    document.getElementById('panel-kw').style.display = 'none';
-  }
-
-  /* Glow */
-  const stage = document.getElementById('card-stage-inner');
-  stage.className = '';
-  if (mode === 'mtg' && c.color) stage.className = 'card-glow-' + c.color;
-  if (mode === 'ygo') stage.className = 'card-glow-R';
-
-  /* Status bar */
-  document.getElementById('status-card-name').textContent = c.name || '';
-}
-
-function populateMeta(mode, c) {
-  const rows = document.getElementById('meta-rows');
-  rows.innerHTML = '';
-
-  function addRow(label, html) {
-    rows.innerHTML += `<div class="info-row"><span class="info-label">${label}</span><span class="info-val">${html}</span></div>`;
-  }
-
-  addRow('Nom', `<span style="font-family:var(--font-body)">${c.name || '—'}</span>`);
-
-  if (mode === 'mtg') {
-    addRow('Couleur', `<span class="info-badge badge-${c.color}">${c.color || '—'}</span>`);
-    addRow('Type', `<span style="font-size:.72rem">${(c.typeStr || '').split('—')[0].trim()}</span>`);
-    addRow('Rareté', `<span class="info-badge badge-rarity">${c.rarity || '—'}</span>`);
-    if (c.category) addRow('Catégorie', c.category);
-  } else {
-    const attrColors = { DARK:'#c090f0', LIGHT:'#f0e060', FIRE:'#ff8060', WATER:'#80b8ff', EARTH:'#b0b080', WIND:'#a0f0c0', DIVINE:'#f0e0c0' };
-    const ac = attrColors[c.attr] || '#ddd';
-    addRow('Attribut', `<span style="color:${ac};font-weight:700">${c.emoji || ''} ${c.attr || '—'}</span>`);
-    addRow('Type', `<span style="font-size:.72rem">${c.kind || '—'}</span>`);
-    if (c.level) addRow('Niveau', `${'★'.repeat(Math.min(c.level, 12))}`);
-    if (c.race) addRow('Race', c.race);
-  }
-
-  document.getElementById('card-meta').style.display = '';
-}
-</script>
 </body>
 </html>
