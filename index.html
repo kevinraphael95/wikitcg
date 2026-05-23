@@ -1,105 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WikiTCG — Chaque article devient une carte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Matrix+Sans+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
 <body>
 
-<div class="bg-glow"></div>
+<button class="theme-toggle" id="themeBtn" aria-label="Changer de thème">☽</button>
 
-<!-- HERO -->
-<header class="hero">
-
-  <div class="hero-top">
-    <div class="hero-runes">✦ ✦ ✦</div>
-
-    <h1>WikiTCG</h1>
-
-    <p>
-      Chaque article Wikipédia devient une carte légendaire
-    </p>
-  </div>
-
+<header>
+  <div class="header-ornament">✦ ✦ ✦</div>
+  <h1>WikiTCG</h1>
+  <p>Chaque article Wikipédia devient une carte</p>
 </header>
 
-<!-- MAIN -->
-<main class="app-shell">
+<section class="ui" aria-label="Recherche">
+  <div class="search-row">
+    <div class="search-wrap">
+      <span class="search-icon">⚔</span>
+      <input id="q" type="text" placeholder="Napoléon, Kraken, Tour Eiffel…" autocomplete="off" spellcheck="false">
+    </div>
+    <button class="btn btn-invoke" id="bGen">Invoquer</button>
+  </div>
+  <div class="extra-btns">
+    <button class="btn btn-daily" id="bDaily">📅 Carte du jour</button>
+    <button class="btn btn-rand" id="bRand">⚄ Aléatoire</button>
+  </div>
+</section>
 
-  <!-- LEFT PANEL -->
-  <section class="control-panel">
+<div id="loader" class="loader hidden" aria-live="polite">
+  <div class="loader-inner">
+    <div class="loader-rune">᛭</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+    <p class="loader-txt">Consultation des archives…</p>
+  </div>
+</div>
 
-    <div class="search-card">
+<div id="err" class="err hidden" role="alert"></div>
 
-      <div class="search-input-wrap">
-        <span class="search-icon">⚔</span>
+<div id="out" class="card-zone hidden">
+  <div class="mode-switch" role="tablist">
+    <button class="mode-btn m-active" id="btnMTG" role="tab" onclick="switchMode('mtg')">
+      <span class="mode-icon">⚔</span> Magic: the Gathering
+    </button>
+    <button class="mode-btn" id="btnYGO" role="tab" onclick="switchMode('ygo')">
+      <span class="mode-icon">★</span> Yu-Gi-Oh!
+    </button>
+  </div>
 
-        <input
-          id="q"
-          type="text"
-          placeholder="Napoléon, Kraken, Tour Eiffel..."
-        >
+  <!-- ══ MTG CARD ══ -->
+  <div id="view-mtg" role="tabpanel">
+    <div class="mtg-card" id="mc">
+      <!-- Couche texture interne -->
+      <div class="mtg-texture"></div>
+
+      <!-- Bandeau nom + mana -->
+      <div class="mtg-top">
+        <span class="mtg-name" id="mc-name"></span>
+        <div class="mtg-mana" id="mc-mana"></div>
       </div>
 
-      <button class="btn btn-gold" id="bGen">
-        Invoquer
-      </button>
-
-    </div>
-
-    <div class="quick-actions">
-
-      <button class="btn btn-glass" id="bDaily">
-        📅 Carte du jour
-      </button>
-
-      <button class="btn btn-glass" id="bRand">
-        ⚄ Aléatoire
-      </button>
-
-    </div>
-
-    <div class="switcher">
-
-      <button class="switch active">
-        Magic
-      </button>
-
-      <button class="switch">
-        Yu-Gi-Oh!
-      </button>
-
-    </div>
-
-  </section>
-
-  <!-- CARD AREA -->
-  <section class="viewer">
-
-    <div class="viewer-glow"></div>
-
-    <div id="out" class="card-stage">
-
-      <!-- MTG -->
-      <div id="view-mtg">
-
-        <article class="mtg-card">
-          ...
-        </article>
-
+      <!-- Illustration -->
+      <div class="mtg-art-frame">
+        <img id="mc-img" src="" alt="" loading="lazy">
+        <div class="mtg-art-ph" id="mc-ph"></div>
       </div>
 
-      <!-- YGO -->
-      <div id="view-ygo" class="hidden">
+      <!-- Type + rareté -->
+      <div class="mtg-type-bar">
+        <span class="mtg-type-txt" id="mc-typetxt"></span>
+        <span class="mtg-rarity" id="mc-rarity"></span>
+      </div>
 
-        <article class="ygo-card">
-          ...
-        </article>
+      <!-- Textbox -->
+      <div class="mtg-box" id="mc-box">
+        <div class="mtg-rules" id="mc-rules">
+          <div class="mtg-kw" id="mc-kw"></div>
+          <div class="mtg-ab" id="mc-ab"></div>
+        </div>
+        <div class="mtg-flav" id="mc-flav"></div>
+      </div>
 
+      <!-- Footer -->
+      <div class="mtg-foot">
+        <span class="mtg-set-sym" id="mc-set">WIKITCG • FR</span>
+        <div class="mtg-pt-wrap">
+          <span class="mtg-pt" id="mc-pt"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ YGO CARD ══ -->
+  <div id="view-ygo" class="hidden" role="tabpanel">
+    <div class="ygo-card" id="yc">
+
+      <!-- Bandeau nom -->
+      <div class="ygo-header">
+        <span class="ygo-name" id="yc-name"></span>
+        <div class="ygo-attr" id="yc-attr"></div>
+      </div>
+
+      <!-- Niveau/rang -->
+      <div class="ygo-level-row" id="yc-level-row">
+        <div class="ygo-stars" id="yc-stars"></div>
+      </div>
+
+      <!-- Illustration -->
+      <div class="ygo-art-outer">
+        <div class="ygo-art-inner">
+          <img id="yc-img" src="" alt="" loading="lazy">
+          <div class="ygo-art-ph" id="yc-ph"></div>
+        </div>
+      </div>
+
+      <!-- Sous-type -->
+      <div class="ygo-type-bar">
+        <span class="ygo-subtype-lbl" id="yc-subtype"></span>
+      </div>
+
+      <!-- Textbox -->
+      <div class="ygo-textbox">
+        <div class="ygo-bracket" id="yc-bracket"></div>
+        <div class="ygo-eff" id="yc-eff"></div>
+        <div class="ygo-flav" id="yc-flav"></div>
+      </div>
+
+      <!-- Stats -->
+      <div class="ygo-stats" id="yc-stats"></div>
+
+      <!-- Footer -->
+      <div class="ygo-foot">
+        <div class="ygo-holo-wrap">
+          <div class="ygo-holo"></div>
+        </div>
+        <span class="ygo-serial" id="yc-serial"></span>
+        <span class="ygo-copy">©WIKITCG</span>
       </div>
 
     </div>
+  </div>
 
-    <a class="wiki-link">
-      Lire l'article Wikipédia
-    </a>
+  <a class="wiki-link" id="wikiLink" href="#" target="_blank" rel="noopener noreferrer">
+    <span>↗</span> Lire l'article Wikipédia
+  </a>
+</div>
 
-  </section>
-
-</main>
-
+<script src="app.js"></script>
 </body>
+</html>
