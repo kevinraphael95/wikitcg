@@ -1,769 +1,907 @@
-/* ═══════════════════════════════════
-   WIKITCG — ULTRA PREMIUM VERSION
-═══════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   WIKITCG — style.css  v2 — Ultra-fidèle aux vraies cartes
+═══════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+img { display: block; max-width: 100%; }
+a { text-decoration: none; color: inherit; }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+/* ══ Google Fonts backup ══ */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+/* ══ TOKENS ══ */
+:root {
+  --font-display: 'Cinzel', 'Palatino Linotype', serif;
+  --font-body: 'EB Garamond', 'Palatino Linotype', Georgia, serif;
+  --font-rules: 'Crimson Text', 'Times New Roman', serif;
+  --font-mono: 'Courier New', monospace;
+
+  --bg:         #1c1b22;
+  --bg-card:    #26252e;
+  --bg-card-h:  #2e2d38;
+  --surface:    #35343f;
+  --border:     rgba(255,255,255,.08);
+  --border-h:   rgba(255,255,255,.20);
+  --text:       #ece8dc;
+  --text-2:     #8a8470;
+  --text-3:     #504c44;
+  --gold:       #c8a84b;
+  --gold-h:     #e8c870;
+  --gold-glow:  rgba(200,168,75,.20);
+  --gold-dim:   rgba(200,168,75,.08);
+  --shadow:     0 4px 24px rgba(0,0,0,.5);
+  --shadow-card:0 28px 80px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.04);
+
+  /* Taille carte MTG réelle : 63×88mm → on scale à ~260px large */
+  --mtg-w: 260px;
+  --mtg-art-h: 148px;
+
+  /* YGO : 59×86mm */
+  --ygo-w: 260px;
+  --ygo-art-h: 158px;
 }
 
-html{
-  scroll-behavior:smooth;
+[data-theme="light"] {
+  --bg:         #ede8df;
+  --bg-card:    #f8f4ed;
+  --bg-card-h:  #f2ede6;
+  --surface:    #e8e2d8;
+  --border:     rgba(0,0,0,.08);
+  --border-h:   rgba(0,0,0,.18);
+  --text:       #1a1710;
+  --text-2:     #625c48;
+  --text-3:     #9a9080;
+  --gold:       #9a6e1a;
+  --gold-h:     #7a5410;
+  --gold-glow:  rgba(154,110,26,.15);
+  --gold-dim:   rgba(154,110,26,.06);
+  --shadow:     0 4px 20px rgba(0,0,0,.12);
+  --shadow-card:0 16px 48px rgba(0,0,0,.22), 0 0 0 1px rgba(0,0,0,.05);
 }
 
-body{
-  min-height:100vh;
+/* ══ BASE ══ */
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
 
-  background:
-    radial-gradient(circle at top,
-      rgba(255,210,120,.12),
-      transparent 30%
-    ),
-
-    radial-gradient(circle at bottom,
-      rgba(60,90,255,.08),
-      transparent 35%
-    ),
-
-    linear-gradient(
-      180deg,
-      #050505 0%,
-      #0d1017 45%,
-      #050507 100%
-    );
-
-  color:#f5f1e8;
-
-  font-family:
-    Inter,
-    system-ui,
-    sans-serif;
-
-  overflow-x:hidden;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-
-  padding-bottom:120px;
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 6rem;
+  transition: background .4s, color .4s;
+  overflow-x: hidden;
+  position: relative;
 }
 
-/* ═══════════════════════════════════
-   GLOBAL
-═══════════════════════════════════ */
-
-img{
-  display:block;
-  max-width:100%;
+/* Grain overlay */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: .025; pointer-events: none; z-index: 900;
 }
 
-button{
-  border:none;
-  outline:none;
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse 80% 30% at 50% -2%, var(--gold-glow) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
+
+/* ══ THEME TOGGLE ══ */
+.theme-toggle {
+  position: fixed; top: 1rem; right: 1rem; z-index: 300;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-2); cursor: pointer;
+  font-size: .95rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .3s;
+  box-shadow: var(--shadow);
+}
+.theme-toggle:hover {
+  border-color: var(--gold); color: var(--gold);
+  transform: scale(1.1) rotate(20deg);
+  box-shadow: 0 0 18px var(--gold-glow);
 }
 
-.hidden{
-  display:none !important;
+/* ══ HEADER ══ */
+header {
+  width: 100%; max-width: 700px;
+  text-align: center;
+  padding: 3rem 1.5rem 2rem;
+  animation: fadeDown .6s ease both;
+}
+.header-ornament {
+  font-family: var(--font-mono); font-size: .45rem;
+  letter-spacing: .9em; color: var(--gold); opacity: .45;
+  margin-bottom: .8rem;
+}
+h1 {
+  font-family: var(--font-display); font-weight: 900;
+  font-size: clamp(2.6rem, 10vw, 4.4rem);
+  letter-spacing: .3em; line-height: 1;
+  background: linear-gradient(148deg, #a07828 0%, #f0d070 38%, #c8a84b 65%, #e8c870 80%, #a07828 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 30px var(--gold-glow));
+}
+header p {
+  font-family: var(--font-body); font-style: italic;
+  color: var(--text-2); font-size: 1rem; margin-top: .5rem; letter-spacing: .04em;
+}
+header::after {
+  content: ''; display: block;
+  width: 80px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 1.2rem auto 0; opacity: .4;
 }
 
-/* ═══════════════════════════════════
-   HEADER
-═══════════════════════════════════ */
+/* ══ UI ══ */
+.ui {
+  width: 100%; max-width: 500px; margin-bottom: 2rem;
+  padding: 0 1rem;
+  animation: fadeDown .6s .1s ease both;
+}
+.search-row { display: flex; gap: .5rem; margin-bottom: .7rem; }
+.search-wrap { position: relative; flex: 1; }
+.search-icon {
+  position: absolute; left: .9rem; top: 50%; transform: translateY(-50%);
+  color: var(--text-3); font-size: .8rem; pointer-events: none; transition: color .2s;
+}
+.search-wrap:focus-within .search-icon { color: var(--gold); }
 
-header{
-  text-align:center;
+#q {
+  width: 100%; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: .82rem 1rem .82rem 2.4rem;
+  color: var(--text); font-family: var(--font-body); font-size: 1rem;
+  outline: none; transition: border-color .2s, box-shadow .2s;
+}
+#q:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+#q::placeholder { color: var(--text-3); }
 
-  padding-top:110px;
+.btn {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: .58rem; letter-spacing: .12em;
+  border: none; border-radius: 10px; cursor: pointer;
+  transition: all .22s;
+  display: flex; align-items: center; justify-content: center; gap: .4rem;
+}
+.btn:disabled { opacity: .3; pointer-events: none; }
 
-  margin-bottom:50px;
-
-  animation:fadeDown .8s ease;
+.btn-invoke {
+  padding: .82rem 1.4rem; white-space: nowrap;
+  background: linear-gradient(135deg, #7a5808, var(--gold));
+  color: #05040a;
+  box-shadow: 0 4px 20px rgba(200,168,75,.3);
+}
+.btn-invoke:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(200,168,75,.45);
+  filter: brightness(1.08);
 }
 
-.header-ornament{
-  color:#d6a74c;
-
-  opacity:.4;
-
-  margin-bottom:18px;
-
-  letter-spacing:1em;
-
-  font-size:.7rem;
+.extra-btns { display: flex; gap: .5rem; }
+.btn-daily {
+  flex: 1; padding: .8rem 1rem;
+  background: linear-gradient(135deg, #18346a, #2458a8);
+  color: #c0d8ff; border: 1px solid #3868b8;
+  font-size: .55rem;
+  box-shadow: 0 4px 16px rgba(36,88,168,.3);
+}
+.btn-daily:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(36,88,168,.4);
+}
+.btn-rand {
+  flex: 1; padding: .8rem 1rem;
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-2); font-size: .55rem;
+}
+.btn-rand:hover:not(:disabled) {
+  border-color: var(--gold); color: var(--gold);
+  box-shadow: 0 0 14px var(--gold-glow);
 }
 
-h1{
-  font-family:
-    Cinzel,
-    serif;
+/* ══ LOADER ══ */
+.loader {
+  display: flex; align-items: center; justify-content: center;
+  padding: 5rem 1rem;
+}
+.loader-inner { text-align: center; }
+.loader-rune { font-size: 2.2rem; color: var(--gold); opacity: .65; animation: spin 3s linear infinite; display: block; margin-bottom: .8rem; }
+.dots { display: flex; gap: .4rem; justify-content: center; margin-bottom: .6rem; }
+.dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); animation: bounce .8s infinite ease-in-out; }
+.dots span:nth-child(2) { animation-delay: .16s; }
+.dots span:nth-child(3) { animation-delay: .32s; }
+.loader-txt { color: var(--text-3); font-style: italic; font-size: .85rem; letter-spacing: .1em; }
 
-  font-size:
-    clamp(4rem, 9vw, 7rem);
-
-  font-weight:900;
-
-  letter-spacing:.22em;
-
-  background:
-    linear-gradient(
-      180deg,
-      #fff7d8 0%,
-      #f0d070 28%,
-      #d0a040 65%,
-      #8a6218 100%
-    );
-
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-
-  filter:
-    drop-shadow(0 0 25px rgba(255,210,100,.12));
+/* ══ ERROR ══ */
+.err {
+  max-width: 420px; text-align: center; padding: 1rem 1.5rem;
+  border-radius: 10px; border: 1px solid rgba(180,40,40,.35);
+  background: rgba(30,6,6,.5); color: #e06060;
+  font-style: italic; font-size: .9rem; animation: fadeUp .3s ease;
 }
 
-header p{
-  margin-top:14px;
-
-  font-size:1.1rem;
-
-  opacity:.68;
-
-  font-weight:300;
-
-  letter-spacing:.04em;
+/* ══ CARD ZONE ══ */
+.card-zone {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 1rem; animation: fadeUp .45s ease both;
 }
 
-/* ═══════════════════════════════════
-   SEARCH UI
-═══════════════════════════════════ */
-
-.ui{
-  width:100%;
-  max-width:650px;
-
-  display:flex;
-  flex-direction:column;
-
-  gap:14px;
-
-  margin-bottom:40px;
-
-  animation:fadeUp .8s ease;
+/* ══ MODE SWITCH ══ */
+.mode-switch {
+  display: flex; border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; width: min(var(--mtg-w), 92vw);
+  box-shadow: var(--shadow);
 }
-
-.search-row{
-  display:flex;
-  gap:14px;
+.mode-btn {
+  flex: 1; padding: .7rem .5rem; cursor: pointer; border: none;
+  font-family: var(--font-display); font-size: .5rem; font-weight: 700;
+  letter-spacing: .1em; transition: all .22s; background: var(--bg-card);
+  color: var(--text-3);
+  display: flex; align-items: center; justify-content: center; gap: .4rem;
 }
+.mode-btn + .mode-btn { border-left: 1px solid var(--border); }
+.mode-btn:hover:not(.m-active):not(.y-active) { color: var(--text); background: var(--bg-card-h); }
+.mode-btn.m-active { background: linear-gradient(135deg, #3a1e02, #6a4008); color: #f0d060; }
+.mode-btn.y-active { background: linear-gradient(135deg, #080c24, #101858); color: #90b0ff; }
+.mode-icon { font-size: .75rem; }
 
-.search-wrap{
-  position:relative;
-  flex:1;
+/* ══ WIKI LINK ══ */
+.wiki-link {
+  font-family: var(--font-display); font-size: .5rem; letter-spacing: .1em;
+  color: var(--text-3); border: 1px solid var(--border); border-radius: 10px;
+  padding: .65rem 1.2rem; transition: all .22s; width: min(var(--mtg-w), 92vw);
+  text-align: center; display: flex; align-items: center; justify-content: center;
+  gap: .5rem; background: var(--bg-card);
 }
+.wiki-link:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
 
-.search-icon{
-  position:absolute;
+/* ══════════════════════════════════════════════════════════
+   ███╗   ███╗████████╗ ██████╗
+   ████╗ ████║╚══██╔══╝██╔════╝
+   ██╔████╔██║   ██║   ██║  ███╗
+   ██║╚██╔╝██║   ██║   ██║   ██║
+   ██║ ╚═╝ ██║   ██║   ╚██████╔╝
+   MAGIC: THE GATHERING
+══════════════════════════════════════════════════════════ */
 
-  left:18px;
-  top:50%;
-
-  transform:translateY(-50%);
-
-  opacity:.45;
-
-  font-size:.9rem;
-}
-
-#q{
-  width:100%;
-  height:58px;
-
-  padding-left:52px;
-
-  border-radius:18px;
-
-  border:
-    1px solid rgba(255,255,255,.08);
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.06),
-      rgba(255,255,255,.03)
-    );
-
-  backdrop-filter:blur(10px);
-
-  color:white;
-
-  font-size:1rem;
-
-  transition:.25s;
-}
-
-#q:focus{
-  border-color:
-    rgba(255,210,100,.35);
-
+.mtg-card {
+  width: min(var(--mtg-w), 92vw);
+  aspect-ratio: 63 / 88;
+  border-radius: 16px;
+  padding: 8px;
+  position: relative;
+  font-family: var(--font-body);
+  /* Triple border effect */
   box-shadow:
-    0 0 0 4px rgba(255,210,100,.08);
+    inset 0 0 0 1px rgba(255,255,255,.15),
+    var(--shadow-card);
+  transition: transform .4s cubic-bezier(.25,.8,.25,1);
+  cursor: default;
+  display: flex; flex-direction: column;
+  overflow: hidden;
 }
 
-#q::placeholder{
-  color:rgba(255,255,255,.35);
-}
-
-/* ═══════════════════════════════════
-   BUTTONS
-═══════════════════════════════════ */
-
-.btn{
-  height:58px;
-
-  border-radius:18px;
-
-  padding:0 28px;
-
-  cursor:pointer;
-
-  font-weight:700;
-
-  letter-spacing:.04em;
-
-  transition:.25s;
-
-  font-family:
-    Inter,
-    sans-serif;
-
-  border:
-    1px solid rgba(255,255,255,.08);
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.06),
-      rgba(255,255,255,.02)
-    );
-
-  color:white;
-
-  backdrop-filter:blur(10px);
-}
-
-.btn:hover{
-  transform:translateY(-3px);
-
-  border-color:
-    rgba(255,210,100,.3);
-
-  box-shadow:
-    0 12px 40px rgba(0,0,0,.45),
-    0 0 20px rgba(255,210,100,.08);
-}
-
-.btn-invoke{
-  background:
-    linear-gradient(
-      180deg,
-      #f0d070 0%,
-      #d4a030 100%
-    );
-
-  color:#111;
-
-  font-weight:800;
-}
-
-.extra-btns{
-  display:flex;
-  gap:14px;
-}
-
-/* ═══════════════════════════════════
-   CARD ZONE
-═══════════════════════════════════ */
-
-.card-zone{
-  position:relative;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-
-  gap:28px;
-}
-
-.card-zone::before{
-  content:'';
-
-  position:absolute;
-
-  width:800px;
-  height:800px;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(255,215,120,.14),
-      transparent 70%
-    );
-
-  filter:blur(80px);
-
-  z-index:-1;
-}
-
-/* ═══════════════════════════════════
-   MODE SWITCH
-═══════════════════════════════════ */
-
-.mode-switch{
-  display:flex;
-
-  gap:8px;
-
-  padding:8px;
-
-  border-radius:22px;
-
-  background:
-    rgba(255,255,255,.03);
-
-  border:
-    1px solid rgba(255,255,255,.06);
-
-  backdrop-filter:blur(12px);
-}
-
-.mode-btn{
-  height:48px;
-
-  padding:0 24px;
-
-  border-radius:14px;
-
-  cursor:pointer;
-
-  background:transparent;
-
-  color:rgba(255,255,255,.5);
-
-  transition:.25s;
-
-  font-weight:700;
-
-  font-size:.9rem;
-}
-
-.mode-btn:hover{
-  color:white;
-}
-
-.mode-btn.m-active,
-.mode-btn.y-active{
-  color:white;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,210,100,.22),
-      rgba(255,210,100,.08)
-    );
-
-  border:
-    1px solid rgba(255,210,100,.25);
-}
-
-/* ═══════════════════════════════════
-   CARD
-═══════════════════════════════════ */
-
-:root{
-  --card-w:420px;
-}
-
-/* ═══════════════════════════════════
-   YGO CARD
-═══════════════════════════════════ */
-
-.ygo-card{
-  width:var(--card-w);
-
-  aspect-ratio:59/86;
-
-  position:relative;
-
-  border-radius:6px;
-
-  overflow:hidden;
-
-  background:
-    linear-gradient(
-      145deg,
-      #d39a34 0%,
-      #a45c10 30%,
-      #7b4105 60%,
-      #c28522 100%
-    );
-
-  border:7px solid #111;
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255,220,120,.2),
-    inset 0 0 20px rgba(0,0,0,.5),
-    0 40px 100px rgba(0,0,0,.85);
-
-  transition:
-    transform .5s cubic-bezier(.2,.8,.2,1),
-    box-shadow .5s;
-
-  transform-style:preserve-3d;
-}
-
-.ygo-card:hover{
-  transform:
-    perspective(1400px)
-    rotateX(6deg)
-    rotateY(-8deg)
-    translateY(-10px)
-    scale(1.03);
-
-  box-shadow:
-    0 60px 140px rgba(0,0,0,.95),
-    0 0 40px rgba(255,215,120,.08);
-}
-
-/* grain */
-.ygo-card::after{
-  content:'';
-
-  position:absolute;
-  inset:0;
-
+.mtg-card:hover { transform: rotateY(-6deg) rotateX(3deg) scale(1.025) translateY(-4px); }
+
+/* Texture interne */
+.mtg-texture {
+  position: absolute; inset: 0; border-radius: 16px;
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
-
-  opacity:.18;
-
-  mix-blend-mode:overlay;
-
-  pointer-events:none;
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: .04; pointer-events: none; z-index: 0;
 }
 
-/* ═══════════════════════════════════
-   HEADER
-═══════════════════════════════════ */
-
-.ygo-header{
-  height:34px;
-
-  padding:0 10px;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
+/* ── MTG Couleurs – fidèles aux vraies cartes ── */
+/* BLANC */
+.mtg-card.W {
   background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.08),
-      rgba(0,0,0,.18)
-    );
+    linear-gradient(175deg, #f8f3e2 0%, #ede6c8 35%, #d8cc9e 70%, #c8be82 100%);
+  border: 4px solid #c4b040;
+  outline: 2px solid #a89030;
+  outline-offset: -6px;
+}
+/* BLEU */
+.mtg-card.U {
+  background:
+    linear-gradient(175deg, #1c3c78 0%, #142e60 35%, #0e2248 70%, #081838 100%);
+  border: 4px solid #3868b0;
+  outline: 2px solid #2858a0;
+  outline-offset: -6px;
+}
+/* NOIR */
+.mtg-card.B {
+  background:
+    linear-gradient(175deg, #1c1424 0%, #120c18 35%, #0a0810 70%, #06040c 100%);
+  border: 4px solid #6840b8;
+  outline: 2px solid #5030a0;
+  outline-offset: -6px;
+}
+/* ROUGE */
+.mtg-card.R {
+  background:
+    linear-gradient(175deg, #782010 0%, #601408 35%, #4c0e08 70%, #380c06 100%);
+  border: 4px solid #c84820;
+  outline: 2px solid #b03810;
+  outline-offset: -6px;
+}
+/* VERT */
+.mtg-card.G {
+  background:
+    linear-gradient(175deg, #0c3a18 0%, #082c10 35%, #06200c 70%, #041808 100%);
+  border: 4px solid #289830;
+  outline: 2px solid #187820;
+  outline-offset: -6px;
+}
+/* ARTEFACT */
+.mtg-card.A {
+  background:
+    linear-gradient(175deg, #3a3530 0%, #2c2822 35%, #201c18 70%, #181410 100%);
+  border: 4px solid #908060;
+  outline: 2px solid #786848;
+  outline-offset: -6px;
 }
 
-.ygo-name{
-  font-family:
-    "Palatino Linotype",
-    serif;
-
-  font-size:.95rem;
-
-  font-weight:700;
-
-  color:#160b00;
-
-  text-shadow:
-    0 1px 0 rgba(255,255,255,.15),
-    0 1px 2px rgba(0,0,0,.4);
+/* Bague dorée interne (tous types) */
+.mtg-card::before {
+  content: '';
+  position: absolute; inset: 6px;
+  border-radius: 11px;
+  border: 1px solid rgba(220,185,80,.25);
+  pointer-events: none; z-index: 2;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.35);
 }
 
-/* ═══════════════════════════════════
-   ART
-═══════════════════════════════════ */
+/* ── Top bar : nom + mana ── */
+.mtg-top {
+  display: flex; justify-content: space-between; align-items: center;
+  position: relative; z-index: 3;
+  padding: 4px 8px 4px 9px;
+  border-radius: 5px 5px 0 0;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+  /* Fond métallique sombre */
+  background: linear-gradient(180deg, rgba(0,0,0,.58) 0%, rgba(0,0,0,.42) 100%);
+  border: 1px solid rgba(220,185,80,.22);
+  box-shadow: 0 1px 0 rgba(255,255,255,.06), inset 0 1px 0 rgba(0,0,0,.3);
+}
 
-.ygo-art-outer{
-  position:relative;
+.mtg-name {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(.55rem, 2.2vw, .74rem);
+  color: #f8f2e0;
+  letter-spacing: .02em; flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0,0,0,.8);
+}
 
-  margin:6px 10px;
+.mtg-mana { display: flex; gap: 2.5px; align-items: center; flex-shrink: 0; margin-left: 5px; }
 
-  height:260px;
-
-  overflow:hidden;
-
-  background:#000;
-
-  border:1px solid #000;
-
+/* Symboles mana – fidèles */
+.msym {
+  width: 17px; height: 17px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .44rem; font-weight: 800; font-family: var(--font-display);
+  flex-shrink: 0;
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.08),
-    inset 0 0 10px rgba(0,0,0,.7),
-    0 0 0 1px #5a3a08,
-    0 0 0 2px #000;
+    inset 0 1.5px 0 rgba(255,255,255,.4),
+    inset 0 -1.5px 0 rgba(0,0,0,.4),
+    0 1px 3px rgba(0,0,0,.7);
+}
+.msym.gen {
+  background: radial-gradient(circle at 38% 32%, #c0c0c0, #585858);
+  color: #fff; border: 1.5px solid #909090;
+}
+.msym.mW {
+  background: radial-gradient(circle at 38% 32%, #fffce8, #e0ca60);
+  color: #5a4808; border: 1.5px solid #c0a030;
+}
+.msym.mU {
+  background: radial-gradient(circle at 38% 32%, #88c0f8, #1c68d8);
+  color: #d0e8ff; border: 1.5px solid #3878d0;
+}
+.msym.mB {
+  background: radial-gradient(circle at 38% 32%, #a060c8, #380880);
+  color: #e8d0ff; border: 1.5px solid #6030a8;
+}
+.msym.mR {
+  background: radial-gradient(circle at 38% 32%, #f87040, #b82818);
+  color: #ffe0d0; border: 1.5px solid #c84028;
+}
+.msym.mG {
+  background: radial-gradient(circle at 38% 32%, #58d068, #108828);
+  color: #d0ffd8; border: 1.5px solid #289040;
 }
 
-.ygo-art-outer::before{
-  content:'';
-
-  position:absolute;
-  inset:0;
-
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(255,255,255,.12),
-      transparent 20%,
-      transparent 80%,
-      rgba(0,0,0,.35)
-    );
-
-  z-index:2;
-
-  pointer-events:none;
-}
-
-.ygo-art-inner,
-.ygo-art-inner img{
-  width:100%;
-  height:100%;
-}
-
-.ygo-art-inner img{
-  object-fit:cover;
-
-  transition:transform .5s ease;
-}
-
-.ygo-card:hover .ygo-art-inner img{
-  transform:scale(1.05);
-}
-
-/* ═══════════════════════════════════
-   TYPE BAR
-═══════════════════════════════════ */
-
-.ygo-type-bar{
-  height:20px;
-
-  margin:0 10px;
-
-  display:flex;
-  align-items:center;
-
-  padding:0 6px;
-
-  background:
-    rgba(0,0,0,.18);
-}
-
-.ygo-subtype-lbl{
-  font-size:.65rem;
-
-  font-style:italic;
-
-  color:rgba(0,0,0,.7);
-}
-
-/* ═══════════════════════════════════
-   TEXTBOX
-═══════════════════════════════════ */
-
-.ygo-textbox{
-  margin:6px 10px;
-
-  padding:8px;
-
-  flex:1;
-
-  overflow:hidden;
-
-  background:
-    linear-gradient(
-      180deg,
-      #d8c7a2 0%,
-      #cfbe97 45%,
-      #c2b186 100%
-    );
-
-  border:1px solid #6f5320;
-
+/* ── Art frame ── */
+.mtg-art-frame {
+  width: 100%; height: var(--mtg-art-h); flex-shrink: 0;
+  position: relative; z-index: 3;
+  /* Double bord doré comme les vraies */
+  border: 3px solid rgba(180,148,40,.45);
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.12),
-    inset 0 0 8px rgba(0,0,0,.12);
-
-  display:flex;
-  flex-direction:column;
+    0 0 0 1px rgba(0,0,0,.6),
+    inset 0 0 0 1px rgba(220,185,80,.18),
+    inset 0 0 12px rgba(0,0,0,.4);
+  overflow: hidden;
+  background: #080818;
+  margin-bottom: 4px;
+}
+.mtg-art-frame img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block; transition: transform .45s ease;
+}
+.mtg-card:hover .mtg-art-frame img { transform: scale(1.06); }
+.mtg-art-ph {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4rem; background: linear-gradient(135deg, #101020, #080812);
+  color: rgba(255,255,255,.15);
 }
 
-.ygo-bracket{
-  font-size:.62rem;
-
-  font-weight:700;
-
-  margin-bottom:5px;
-
-  color:#2a1808;
+/* ── Type bar ── */
+.mtg-type-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  position: relative; z-index: 3;
+  padding: 3px 9px;
+  border: 1px solid rgba(220,185,80,.22);
+  background: linear-gradient(180deg, rgba(0,0,0,.52) 0%, rgba(0,0,0,.38) 100%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.05);
+  margin-bottom: 4px; flex-shrink: 0;
+}
+.mtg-type-txt {
+  font-family: var(--font-display); font-size: .42rem;
+  letter-spacing: .07em; color: #d8c880; flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mtg-rarity {
+  font-size: .55rem; flex-shrink: 0; margin-left: 4px;
+  filter: drop-shadow(0 0 3px rgba(200,180,80,.5));
 }
 
-.ygo-eff{
-  font-family:
-    "Times New Roman",
-    serif;
-
-  font-size:.68rem;
-
-  line-height:1.32;
-
-  color:#120800;
-
-  letter-spacing:-.01em;
-
-  text-shadow:
-    0 .3px 0 rgba(0,0,0,.15);
+/* ── Textbox ── */
+.mtg-box {
+  position: relative; z-index: 3;
+  flex: 1; overflow: hidden;
+  display: flex; flex-direction: column;
+  border: 1px solid rgba(180,148,40,.22);
+  box-shadow: inset 0 0 0 1px rgba(220,185,80,.10);
 }
 
-/* ═══════════════════════════════════
-   STATS
-═══════════════════════════════════ */
+/* Couleur parchemin selon couleur de carte */
+.mtg-card.W .mtg-box { background: linear-gradient(180deg, #f8f5e8, #f0ecda); }
+.mtg-card.U .mtg-box { background: linear-gradient(180deg, #e8f0f8, #d8e8f4); }
+.mtg-card.B .mtg-box { background: linear-gradient(180deg, #1c1428, #140e1c); }
+.mtg-card.R .mtg-box { background: linear-gradient(180deg, #f8f0e4, #efe4cc); }
+.mtg-card.G .mtg-box { background: linear-gradient(180deg, #e8f4e4, #d8ecd4); }
+.mtg-card.A .mtg-box { background: linear-gradient(180deg, #e0dcd4, #d0ccc4); }
 
-.ygo-stats{
-  height:26px;
+.mtg-rules { flex: 1; overflow: hidden; padding: 5px 8px 2px; }
 
-  padding:0 12px;
+.mtg-kw {
+  font-size: clamp(.46rem, 1.7vw, .6rem);
+  font-weight: 700; font-style: italic;
+  line-height: 1.4; margin-bottom: 2px; flex-shrink: 0;
+}
+/* Couleurs du texte par thème */
+.mtg-card.W .mtg-kw, .mtg-card.R .mtg-kw, .mtg-card.G .mtg-kw, .mtg-card.A .mtg-kw { color: #1a1208; }
+.mtg-card.U .mtg-kw { color: #0c1a38; }
+.mtg-card.B .mtg-kw { color: #c8a8e8; }
 
-  display:flex;
-  justify-content:flex-end;
-  align-items:center;
+.mtg-ab {
+  font-family: var(--font-rules);
+  font-size: clamp(.46rem, 1.7vw, .6rem);
+  line-height: 1.5; overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;
+}
+.mtg-card.W .mtg-ab, .mtg-card.R .mtg-ab, .mtg-card.G .mtg-ab, .mtg-card.A .mtg-ab { color: #100a04; }
+.mtg-card.U .mtg-ab { color: #080c28; }
+.mtg-card.B .mtg-ab { color: #d8c8f0; }
 
-  gap:14px;
-
-  font-weight:700;
-
-  font-size:.82rem;
-
-  color:#1a1208;
+/* Séparateur en filigrane */
+.mtg-box::after {
+  content: '';
+  display: block;
+  height: 1px;
+  margin: 0 8px;
+  background: linear-gradient(90deg, transparent, rgba(100,80,20,.25), transparent);
+  flex-shrink: 0;
 }
 
-/* ═══════════════════════════════════
-   FOOTER
-═══════════════════════════════════ */
-
-.ygo-foot{
-  height:22px;
-
-  padding:0 10px;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  font-size:.5rem;
-
-  opacity:.65;
+.mtg-flav {
+  font-style: italic;
+  font-size: clamp(.42rem, 1.5vw, .56rem);
+  padding: 3px 8px 5px;
+  line-height: 1.45; flex-shrink: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.mtg-card.W .mtg-flav, .mtg-card.R .mtg-flav, .mtg-card.G .mtg-flav, .mtg-card.A .mtg-flav { color: #4a3820; }
+.mtg-card.U .mtg-flav { color: #283860; }
+.mtg-card.B .mtg-flav { color: #9870c0; }
 
-/* ═══════════════════════════════════
-   WIKI LINK
-═══════════════════════════════════ */
-
-.wiki-link{
-  height:52px;
-
-  padding:0 28px;
-
-  border-radius:16px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  gap:10px;
-
-  color:white;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.05),
-      rgba(255,255,255,.02)
-    );
-
-  border:
-    1px solid rgba(255,255,255,.08);
-
-  backdrop-filter:blur(10px);
-
-  transition:.25s;
+/* ── Footer ── */
+.mtg-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  position: relative; z-index: 3;
+  padding: 4px 9px 2px; flex-shrink: 0;
 }
+.mtg-set-sym {
+  font-size: .32rem; font-family: var(--font-display);
+  letter-spacing: .08em; color: rgba(255,255,255,.2);
+}
+.mtg-pt-wrap {
+  background: rgba(0,0,0,.65); border: 1.5px solid rgba(220,185,80,.4);
+  border-radius: 4px; padding: 1px 9px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+  display: flex; align-items: center; justify-content: center;
+}
+.mtg-pt {
+  font-family: var(--font-display); font-size: .7rem; font-weight: 700;
+  color: #f8f0d8;
+  display: none;
+}
+.mtg-pt.show { display: block; }
+.mtg-pt-wrap:has(.mtg-pt:not(.show)) { display: none; }
 
-.wiki-link:hover{
-  transform:translateY(-3px);
 
-  border-color:
-    rgba(255,210,100,.3);
+/* ══════════════════════════════════════════════════════════
+   ██╗   ██╗ ██████╗  ██████╗
+   ╚██╗ ██╔╝██╔════╝ ██╔═══██╗
+    ╚████╔╝ ██║  ███╗██║   ██║
+     ╚██╔╝  ██║   ██║██║   ██║
+      ██║   ╚██████╔╝╚██████╔╝
+   YU-GI-OH
+══════════════════════════════════════════════════════════ */
 
+.ygo-card {
+  width: min(var(--ygo-w), 92vw);
+  aspect-ratio: 59 / 86;
+  border-radius: 8px;
+  position: relative;
+  font-family: var(--font-body);
+  overflow: hidden;
+  /* Bordure triple métallique dorée */
   box-shadow:
-    0 12px 30px rgba(0,0,0,.45);
+    0 0 0 2px #f0d060,
+    0 0 0 4px #806820,
+    0 0 0 6px #d0a830,
+    var(--shadow-card);
+  transition: transform .4s cubic-bezier(.25,.8,.25,1);
+  cursor: default;
+  display: flex; flex-direction: column;
+}
+.ygo-card:hover { transform: rotateY(-6deg) rotateX(3deg) scale(1.025) translateY(-4px); }
+
+/* ── Fonds par type – textures détaillées ── */
+.ygo-card.normal {
+  background:
+    repeating-linear-gradient(45deg, rgba(180,130,20,.05) 0px, rgba(180,130,20,.05) 1px, transparent 1px, transparent 10px),
+    repeating-linear-gradient(-45deg, rgba(180,130,20,.05) 0px, rgba(180,130,20,.05) 1px, transparent 1px, transparent 10px),
+    linear-gradient(160deg, #d8ac40 0%, #c49020 35%, #bc8010 65%, #a87010 100%);
+}
+.ygo-card.effect {
+  background:
+    repeating-linear-gradient(30deg, rgba(160,60,10,.06) 0px, rgba(160,60,10,.06) 1px, transparent 1px, transparent 8px),
+    linear-gradient(160deg, #cc6c1a 0%, #a84e10 35%, #b85a1a 65%, #903808 100%);
+}
+.ygo-card.ritual {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(80,120,255,.18) 0%, transparent 55%),
+    linear-gradient(160deg, #2848a8 0%, #1a3090 35%, #1e3898 65%, #162880 100%);
+}
+.ygo-card.fusion {
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(160,60,255,.15) 0%, transparent 55%),
+    linear-gradient(160deg, #7030a8 0%, #521680 35%, #602090 65%, #3a0e68 100%);
+}
+.ygo-card.synchro {
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.025) 0px, rgba(0,0,0,.025) 1px, transparent 1px, transparent 5px),
+    linear-gradient(160deg, #eee8d8 0%, #d8d0c0 35%, #dcd4c4 65%, #ccc4b0 100%);
+}
+.ygo-card.xyz {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(60,40,100,.35) 0%, transparent 60%),
+    radial-gradient(circle at 70% 70%, rgba(40,20,80,.4) 0%, transparent 60%),
+    linear-gradient(160deg, #141018 0%, #0c080e 35%, #100c16 65%, #080610 100%);
+}
+.ygo-card.link {
+  background:
+    repeating-linear-gradient(60deg, rgba(30,70,200,.06) 0px, rgba(30,70,200,.06) 1px, transparent 1px, transparent 10px),
+    linear-gradient(160deg, #1a2c80 0%, #101a62 35%, #142e84 65%, #0c1460 100%);
+}
+.ygo-card.spell {
+  background:
+    repeating-linear-gradient(-30deg, rgba(10,100,50,.07) 0px, rgba(10,100,50,.07) 1px, transparent 1px, transparent 8px),
+    linear-gradient(160deg, #126840 0%, #084a2a 35%, #0c5c36 65%, #063820 100%);
+}
+.ygo-card.trap {
+  background:
+    repeating-linear-gradient(30deg, rgba(130,15,55,.07) 0px, rgba(130,15,55,.07) 1px, transparent 1px, transparent 8px),
+    linear-gradient(160deg, #941840 0%, #6c0c2c 35%, #7c1238 65%, #520a20 100%);
 }
 
-/* ═══════════════════════════════════
-   ANIMATIONS
-═══════════════════════════════════ */
+/* ── Header YGO : bandeau nom pleine largeur ── */
+.ygo-header {
+  padding: 0 8px;
+  height: 36px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+  position: relative;
+}
+/* Dégradé par-dessus le fond de carte */
+.ygo-card.normal .ygo-header,
+.ygo-card.effect .ygo-header,
+.ygo-card.synchro .ygo-header { background: linear-gradient(180deg, rgba(0,0,0,.04) 0%, rgba(0,0,0,.28) 100%); }
+.ygo-card.ritual .ygo-header,
+.ygo-card.fusion .ygo-header,
+.ygo-card.xyz .ygo-header,
+.ygo-card.link .ygo-header,
+.ygo-card.spell .ygo-header,
+.ygo-card.trap .ygo-header { background: linear-gradient(180deg, rgba(0,0,0,.0) 0%, rgba(0,0,0,.38) 100%); }
 
-@keyframes fadeDown{
-  from{
-    opacity:0;
-    transform:translateY(-30px);
-  }
-  to{
-    opacity:1;
-    transform:none;
-  }
+.ygo-name {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, var(--font-display), serif;
+  font-weight: 700;
+  font-size: clamp(.62rem, 2.6vw, .86rem);
+  letter-spacing: .015em; flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* Couleur du nom par type */
+.ygo-card.normal .ygo-name,
+.ygo-card.effect .ygo-name { color: #1a0e00; text-shadow: 0 1px 0 rgba(255,220,120,.2); }
+.ygo-card.synchro .ygo-name { color: #080808; text-shadow: 0 1px 0 rgba(255,255,255,.3); }
+.ygo-card.ritual .ygo-name,
+.ygo-card.fusion .ygo-name,
+.ygo-card.xyz .ygo-name,
+.ygo-card.link .ygo-name,
+.ygo-card.spell .ygo-name,
+.ygo-card.trap .ygo-name { color: #f8f0d0; text-shadow: 1px 1px 2px rgba(0,0,0,.9); }
+
+/* Attribut – badge rond */
+.ygo-attr {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .82rem; flex-shrink: 0; margin-left: 5px;
+  border: 2px solid rgba(255,255,255,.55);
+  background: radial-gradient(circle at 35% 32%, rgba(255,255,255,.28), rgba(0,0,0,.45));
+  box-shadow: 0 1px 5px rgba(0,0,0,.6), inset 0 1.5px 0 rgba(255,255,255,.22);
 }
 
-@keyframes fadeUp{
-  from{
-    opacity:0;
-    transform:translateY(30px);
-  }
-  to{
-    opacity:1;
-    transform:none;
-  }
+/* ── Ligne niveau/étoiles ── */
+.ygo-level-row {
+  min-height: 18px; padding: 1px 8px 2px;
+  display: flex; align-items: center; flex-shrink: 0;
+  /* Dégradé sous le header */
+  background: rgba(0,0,0,.12);
+}
+.ygo-stars { display: flex; gap: 1px; align-items: center; }
+
+/* Étoiles côté DROIT pour monstres normaux (niveaux gauche→droite) */
+.ygo-card.normal .ygo-stars,
+.ygo-card.effect .ygo-stars,
+.ygo-card.ritual .ygo-stars,
+.ygo-card.fusion .ygo-stars,
+.ygo-card.synchro .ygo-stars { justify-content: flex-end; width: 100%; }
+
+/* Rangs XYZ côté GAUCHE */
+.ygo-card.xyz .ygo-stars { justify-content: flex-start; width: 100%; }
+
+.ygo-star {
+  font-size: .82rem; line-height: 1;
+  color: #f0c830;
+  text-shadow: 0 0 5px rgba(240,200,50,.65), 0 1px 2px rgba(0,0,0,.8);
+}
+.ygo-star.rk {
+  color: #c0c0d8;
+  text-shadow: 0 0 5px rgba(180,180,220,.5), 0 1px 2px rgba(0,0,0,.8);
+}
+.ygo-star.lk {
+  font-family: var(--font-display); font-size: .5rem; font-weight: 700;
+  color: #80b0ff; border: 1px solid #4070d0;
+  border-radius: 3px; padding: 1px 5px;
+  background: rgba(20,40,100,.5);
 }
 
-/* ═══════════════════════════════════
-   MOBILE
-═══════════════════════════════════ */
-
-@media(max-width:600px){
-
-  :root{
-    --card-w:320px;
-  }
-
-  h1{
-    letter-spacing:.12em;
-  }
-
-  .search-row{
-    flex-direction:column;
-  }
-
-  .extra-btns{
-    flex-direction:column;
-  }
-
+/* ── Art YGO ── */
+.ygo-art-outer {
+  margin: 3px 8px; flex-shrink: 0;
+  /* Cadre double doré comme les vraies */
+  border: 2px solid rgba(0,0,0,.8);
+  box-shadow:
+    0 0 0 1px rgba(180,140,20,.45),
+    0 0 0 2px rgba(0,0,0,.6),
+    inset 0 0 0 1px rgba(0,0,0,.5);
+  background: #0a0a14;
+  height: var(--ygo-art-h);
+  overflow: hidden; position: relative;
 }
+.ygo-card.synchro .ygo-art-outer {
+  background: #c8c4b4;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.3), 0 0 0 2px rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.2);
+}
+.ygo-card.xyz .ygo-art-outer {
+  box-shadow: 0 0 0 1px rgba(100,60,200,.45), 0 0 0 2px rgba(0,0,0,.8), inset 0 0 0 1px rgba(60,30,120,.4);
+}
+
+.ygo-art-inner { width: 100%; height: 100%; overflow: hidden; }
+.ygo-art-inner img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block; transition: transform .45s ease;
+}
+.ygo-card:hover .ygo-art-inner img { transform: scale(1.06); }
+.ygo-art-ph {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4.2rem; opacity: .35;
+  background: linear-gradient(135deg, #0a0a1c, #040410);
+}
+.ygo-card.synchro .ygo-art-ph { background: linear-gradient(135deg, #d0c8b8, #b8b0a0); opacity: .5; }
+
+/* ── Barre type ── */
+.ygo-type-bar {
+  padding: 2px 9px; flex-shrink: 0;
+  min-height: 16px;
+  display: flex; align-items: center;
+  background: rgba(0,0,0,.12);
+}
+.ygo-subtype-lbl {
+  font-size: .42rem; letter-spacing: .05em;
+  font-style: italic; font-family: var(--font-display); font-weight: 600;
+}
+.ygo-card.normal .ygo-subtype-lbl,
+.ygo-card.effect .ygo-subtype-lbl,
+.ygo-card.synchro .ygo-subtype-lbl { color: rgba(0,0,0,.65); }
+.ygo-card.xyz .ygo-subtype-lbl,
+.ygo-card.link .ygo-subtype-lbl,
+.ygo-card.ritual .ygo-subtype-lbl,
+.ygo-card.fusion .ygo-subtype-lbl,
+.ygo-card.spell .ygo-subtype-lbl,
+.ygo-card.trap .ygo-subtype-lbl { color: rgba(255,255,255,.6); }
+
+/* ── Textbox YGO ── */
+.ygo-textbox {
+  margin: 3px 8px; flex: 1; overflow: hidden;
+  display: flex; flex-direction: column;
+  position: relative;
+  /* Parchemin crème */
+  background: rgba(255,252,235,.93);
+  border: 1px solid rgba(100,80,20,.45);
+  box-shadow:
+    inset 0 0 0 1px rgba(200,160,40,.2),
+    inset 0 0 8px rgba(160,120,10,.07);
+  padding: 4px 6px 3px;
+}
+/* Coins ornés */
+.ygo-textbox::before {
+  content: '';
+  position: absolute; inset: 2px;
+  border: 1px solid rgba(150,110,10,.18);
+  pointer-events: none; z-index: 1;
+}
+
+/* Fond sombre pour xyz/link */
+.ygo-card.xyz .ygo-textbox,
+.ygo-card.link .ygo-textbox {
+  background: rgba(10,6,20,.93);
+  border-color: rgba(80,50,180,.4);
+  box-shadow: inset 0 0 0 1px rgba(60,40,140,.2);
+}
+.ygo-card.xyz .ygo-textbox::before,
+.ygo-card.link .ygo-textbox::before { border-color: rgba(80,60,180,.18); }
+
+.ygo-bracket {
+  font-size: .46rem; letter-spacing: .04em;
+  font-style: italic; font-family: var(--font-display); font-weight: 600;
+  line-height: 1.3; flex-shrink: 0; color: #2a1a08; z-index: 2; position: relative;
+}
+.ygo-card.xyz .ygo-bracket, .ygo-card.link .ygo-bracket { color: #c0b8d8; }
+.ygo-card.synchro .ygo-bracket { color: #1a1208; }
+.ygo-card.spell .ygo-bracket, .ygo-card.trap .ygo-bracket { color: #2a1a08; }
+
+.ygo-eff {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: .54rem; line-height: 1.5; color: #0a0400;
+  overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical;
+  flex: 1; z-index: 2; position: relative;
+}
+.ygo-card.xyz .ygo-eff, .ygo-card.link .ygo-eff { color: #d0c8e8; }
+.ygo-card.synchro .ygo-eff { color: #080400; }
+
+.ygo-flav {
+  font-style: italic; font-size: .5rem; line-height: 1.4;
+  color: #2a1808; margin-top: auto; flex-shrink: 0;
+  border-top: 1px solid rgba(100,80,20,.22); padding-top: 2px;
+  z-index: 2; position: relative;
+}
+.ygo-card.xyz .ygo-flav, .ygo-card.link .ygo-flav { color: #b0a8c8; border-top-color: rgba(100,80,200,.2); }
+
+/* ── Stats ATK/DEF ── */
+.ygo-stats {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 2px 10px; flex-shrink: 0;
+  background: rgba(0,0,0,.1);
+  font-family: 'Arial Narrow', 'Arial', sans-serif;
+}
+.ygo-card.xyz .ygo-stats, .ygo-card.link .ygo-stats { background: rgba(0,0,0,.3); }
+
+.ygo-stat {
+  font-size: .6rem; font-weight: 700; letter-spacing: .02em;
+  color: rgba(0,0,0,.72);
+}
+.ygo-card.xyz .ygo-stat, .ygo-card.link .ygo-stat { color: rgba(255,255,255,.72); }
+.ygo-stat span { font-size: .7rem; }
+
+/* ── Footer ── */
+.ygo-foot {
+  padding: 2px 9px 4px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+}
+.ygo-holo-wrap { display: flex; align-items: center; gap: 4px; }
+
+/* Hologramme rond prismatique */
+.ygo-holo {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.5);
+  background: conic-gradient(
+    from 0deg,
+    rgba(255,80,80,.7),
+    rgba(255,200,0,.7),
+    rgba(80,255,80,.7),
+    rgba(0,180,255,.7),
+    rgba(200,0,255,.7),
+    rgba(255,80,80,.7)
+  );
+  opacity: .8;
+  box-shadow: 0 0 4px rgba(255,255,255,.25);
+  animation: holo-spin 6s linear infinite;
+}
+@keyframes holo-spin {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+.ygo-serial {
+  font-size: .36rem; font-family: var(--font-mono);
+  letter-spacing: .05em; color: rgba(0,0,0,.42);
+}
+.ygo-card.xyz .ygo-serial, .ygo-card.link .ygo-serial { color: rgba(255,255,255,.3); }
+
+.ygo-copy {
+  font-size: .34rem; font-family: var(--font-mono);
+  color: rgba(0,0,0,.32); letter-spacing: .04em;
+}
+.ygo-card.xyz .ygo-copy, .ygo-card.link .ygo-copy { color: rgba(255,255,255,.2); }
+
+/* ══ UTILITIES ══ */
+.hidden { display: none !important; }
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeDown { from { opacity:0; transform:translateY(-14px); } to { opacity:1; transform:none; } }
+@keyframes fadeUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:none; } }
+@keyframes bounce   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+@keyframes spin     { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+/* ══ MOBILE ══ */
+@media (max-width: 420px) {
+  :root { --mtg-w: 220px; --mtg-art-h: 122px; --ygo-w: 220px; --ygo-art-h: 128px; }
+  h1 { letter-spacing: .16em; }
+}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
