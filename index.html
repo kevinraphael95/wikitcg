@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WikiTCG — Chaque article devient une carte</title>
+<meta name="description" content="Transformez n'importe quel article Wikipédia en carte Magic ou Yu-Gi-Oh.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Cinzel:wght@400;500;600;700;900&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,29 +15,42 @@
 <button class="theme-toggle" id="themeBtn" aria-label="Changer de thème">☽</button>
 
 <header>
-  <div class="header-ornament"><span>✦ WIKITCG ✦</span></div>
+  <div class="ornament">
+    <div class="ornament-line"></div>
+    <span class="ornament-text">✦ WikiTCG ✦</span>
+    <div class="ornament-line rev"></div>
+  </div>
   <h1>WikiTCG</h1>
-  <p>Chaque article Wikipédia devient une carte</p>
+  <p class="header-sub">Chaque article Wikipédia devient une carte</p>
 </header>
 
 <section class="ui" aria-label="Recherche">
   <div class="search-row">
     <div class="search-wrap">
-      <span class="search-icon">⚔</span>
-      <input id="q" type="text" placeholder="Napoléon, Kraken, Tour Eiffel…" autocomplete="off" spellcheck="false">
+      <span class="search-icon" aria-hidden="true">⚔</span>
+      <input
+        id="q"
+        type="text"
+        placeholder="Napoléon, Kraken, Tour Eiffel…"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Rechercher un article"
+      >
     </div>
-    <button class="btn btn-invoke" id="bGen">Invoquer</button>
+    <button class="btn-invoke" id="bGen" aria-label="Invoquer la carte">Invoquer</button>
   </div>
   <div class="extra-btns">
-    <button class="btn btn-daily" id="bDaily">📅 Carte du jour</button>
-    <button class="btn btn-rand" id="bRand">⚄ Aléatoire</button>
+    <button class="btn-secondary btn-daily" id="bDaily">📅 Carte du jour</button>
+    <button class="btn-secondary btn-rand"  id="bRand">⚄ Aléatoire</button>
   </div>
 </section>
 
-<div id="loader" class="loader hidden" aria-live="polite">
+<div id="loader" class="loader hidden" aria-live="polite" aria-label="Chargement en cours">
   <div class="loader-inner">
-    <div class="loader-rune">᛭</div>
-    <div class="dots"><span></span><span></span><span></span></div>
+    <span class="loader-rune" aria-hidden="true">᛭</span>
+    <div class="dots" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
     <p class="loader-txt">Consultation des archives…</p>
   </div>
 </div>
@@ -43,29 +58,33 @@
 <div id="err" class="err hidden" role="alert"></div>
 
 <div id="out" class="card-zone hidden">
-  <div class="mode-switch" role="tablist">
-    <button class="mode-btn m-active" id="btnMTG" role="tab" onclick="switchMode('mtg')">
-      <span class="mode-icon">⚔</span> Magic: the Gathering
+
+  <div class="mode-switch" role="tablist" aria-label="Format de carte">
+    <button class="mode-btn m-active" id="btnMTG" role="tab"
+            aria-selected="true" onclick="switchMode('mtg')">
+      <span class="mode-icon" aria-hidden="true">⚔</span> Magic
     </button>
-    <button class="mode-btn" id="btnYGO" role="tab" onclick="switchMode('ygo')">
-      <span class="mode-icon">★</span> Yu-Gi-Oh!
+    <button class="mode-btn" id="btnYGO" role="tab"
+            aria-selected="false" onclick="switchMode('ygo')">
+      <span class="mode-icon" aria-hidden="true">★</span> Yu-Gi-Oh!
     </button>
   </div>
 
-  <div id="view-mtg" role="tabpanel">
+  <!-- MTG -->
+  <div id="view-mtg" role="tabpanel" aria-labelledby="btnMTG">
     <div class="mtg-card" id="mc">
-      <div class="mtg-texture"></div>
+      <div class="mtg-texture" aria-hidden="true"></div>
       <div class="mtg-top">
         <span class="mtg-name" id="mc-name"></span>
-        <div class="mtg-mana" id="mc-mana"></div>
+        <div class="mtg-mana" id="mc-mana" aria-label="Coût de mana"></div>
       </div>
       <div class="mtg-art-frame">
         <img id="mc-img" src="" alt="" loading="lazy">
-        <div class="mtg-art-ph" id="mc-ph"></div>
+        <div class="mtg-art-ph" id="mc-ph" aria-hidden="true"></div>
       </div>
       <div class="mtg-type-bar">
         <span class="mtg-type-txt" id="mc-typetxt"></span>
-        <span class="mtg-rarity" id="mc-rarity"></span>
+        <span class="mtg-rarity"   id="mc-rarity"  aria-label="Rareté"></span>
       </div>
       <div class="mtg-box" id="mc-box">
         <div class="mtg-rules" id="mc-rules">
@@ -83,19 +102,20 @@
     </div>
   </div>
 
-  <div id="view-ygo" class="hidden" role="tabpanel">
+  <!-- YGO -->
+  <div id="view-ygo" class="hidden" role="tabpanel" aria-labelledby="btnYGO">
     <div class="ygo-card" id="yc">
       <div class="ygo-header">
         <span class="ygo-name" id="yc-name"></span>
-        <div class="ygo-attr" id="yc-attr"></div>
+        <div  class="ygo-attr" id="yc-attr" aria-label="Attribut"></div>
       </div>
       <div class="ygo-level-row" id="yc-level-row">
-        <div class="ygo-stars" id="yc-stars"></div>
+        <div class="ygo-stars" id="yc-stars" aria-label="Niveau"></div>
       </div>
       <div class="ygo-art-outer">
         <div class="ygo-art-inner">
           <img id="yc-img" src="" alt="" loading="lazy">
-          <div class="ygo-art-ph" id="yc-ph"></div>
+          <div class="ygo-art-ph" id="yc-ph" aria-hidden="true"></div>
         </div>
       </div>
       <div class="ygo-type-bar">
@@ -103,24 +123,26 @@
       </div>
       <div class="ygo-textbox">
         <div class="ygo-bracket" id="yc-bracket"></div>
-        <div class="ygo-eff" id="yc-eff"></div>
-        <div class="ygo-flav" id="yc-flav"></div>
+        <div class="ygo-eff"     id="yc-eff"></div>
+        <div class="ygo-flav"    id="yc-flav"></div>
       </div>
-      <div class="ygo-stats" id="yc-stats"></div>
+      <div class="ygo-stats" id="yc-stats" aria-label="Statistiques"></div>
       <div class="ygo-foot">
         <div class="ygo-holo-wrap">
-          <div class="ygo-holo"></div>
+          <div class="ygo-holo" aria-hidden="true"></div>
         </div>
         <span class="ygo-serial" id="yc-serial"></span>
-        <span class="ygo-copy">©WIKITCG</span>
+        <span class="ygo-copy"   aria-hidden="true">©WIKITCG</span>
       </div>
     </div>
   </div>
 
-  <a class="wiki-link" id="wikiLink" href="#" target="_blank" rel="noopener noreferrer">
-    <span>↗</span> Lire l'article Wikipédia
+  <a class="wiki-link" id="wikiLink" href="#" target="_blank" rel="noopener noreferrer"
+     aria-label="Lire l'article Wikipédia complet">
+    <span aria-hidden="true">↗</span> Lire l'article Wikipédia
   </a>
-</div>
+
+</div><!-- /card-zone -->
 
 <script src="app.js"></script>
 </body>
