@@ -1,101 +1,179 @@
-<body>
+/* ===== RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  <header class="topbar">
-    <div class="logo">WIKITCG</div>
-    <div class="top-actions">
-      <button class="theme-btn">☾</button>
-    </div>
-  </header>
+body {
+  font-family: system-ui, sans-serif;
+  background: radial-gradient(circle at top, #121420, #0b0c10);
+  color: #e6e6e6;
+}
 
-  <main class="layout">
+/* ===== TOPBAR ===== */
+.topbar {
+  height: 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-    <aside class="sidebar">
-      <h3>Filters</h3>
-      <button class="filter">MTG</button>
-      <button class="filter">YGO</button>
-      <button class="filter">Rare</button>
-    </aside>
+  padding: 0 24px;
 
-    <section class="content">
+  background: rgba(10,10,18,0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 
-      <div class="search">
-        <input class="search-input" placeholder="Search cards..." />
-        <button class="btn">Search</button>
-      </div>
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-      <div class="cards">
+.logo {
+  font-weight: 700;
+  letter-spacing: 2px;
+}
 
-        <!-- EXEMPLE CARD MTG -->
-        <div class="mtg-card W">
-          <div class="mtg-header">
-            <div class="mtg-name">Angel of Light</div>
-            <div class="mtg-mana">
-              <div class="msym mW">W</div>
-            </div>
-          </div>
+.theme-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
 
-          <div class="mtg-art-wrap">
-            <img src="https://images.unsplash.com/photo-1549880338-65ddcdfd017b" />
-          </div>
+/* ===== LAYOUT ===== */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: auto;
+}
 
-          <div class="mtg-typeline">
-            Creature — Angel
-          </div>
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: sticky;
+  top: 80px;
 
-          <div class="mtg-textbox">
-            <div class="mtg-ab">
-              Flying. When this enters the battlefield, gain 3 life.
-            </div>
-          </div>
+  height: fit-content;
 
-          <div class="mtg-footer">
-            <div class="mtg-set">WIKI SET</div>
-            <div class="mtg-pt-box">
-              <span class="mtg-pt show">3/3</span>
-            </div>
-          </div>
-        </div>
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
 
-        <!-- EXEMPLE CARD YGO -->
-        <div class="ygo-card effect">
-          <div class="ygo-header">
-            <div class="ygo-name">Dark Flame Beast</div>
-            <div class="ygo-attr">🔥</div>
-          </div>
+  padding: 16px;
+}
 
-          <div class="ygo-level-row">
-            <div class="ygo-stars">
-              ★★★★★★★
-            </div>
-          </div>
+.filter {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
 
-          <div class="ygo-art-frame">
-            <img src="https://images.unsplash.com/photo-1612036782180-6f0822045d5d" />
-          </div>
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: white;
 
-          <div class="ygo-typebar">
-            <span>Fiend / Effect</span>
-          </div>
+  border-radius: 8px;
+  cursor: pointer;
+}
 
-          <div class="ygo-textbox">
-            <div class="ygo-eff">
-              Gains 500 ATK for each FIRE monster in your graveyard.
-            </div>
-            <div class="ygo-flav">
-              Born from endless ash and rage.
-            </div>
-          </div>
+/* ===== CONTENT ===== */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-          <div class="ygo-stats">
-            <div class="ygo-stat">ATK <span>2000</span></div>
-            <div class="ygo-stat">DEF <span>1500</span></div>
-          </div>
+/* ===== SEARCH ===== */
+.search {
+  display: flex;
+  gap: 10px;
 
-        </div>
+  padding: 14px;
 
-      </div>
-    </section>
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+}
 
-  </main>
+.search-input {
+  flex: 1;
+  padding: 10px;
 
-</body>
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  color: white;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #7c5cff;
+  color: white;
+  cursor: pointer;
+}
+
+/* ===== CARDS GRID ===== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+/* ===== CARDS BASE ===== */
+.mtg-card,
+.ygo-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: 0.25s ease;
+}
+
+.mtg-card:hover,
+.ygo-card:hover {
+  transform: translateY(-6px);
+}
+
+/* ===== MTG ===== */
+.mtg-header {
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mtg-art-wrap img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.mtg-typeline,
+.mtg-textbox,
+.mtg-footer {
+  padding: 8px;
+}
+
+/* ===== YGO ===== */
+.ygo-header {
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ygo-art-frame img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.ygo-typebar,
+.ygo-textbox,
+.ygo-stats {
+  padding: 8px;
+}
