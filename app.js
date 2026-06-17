@@ -536,7 +536,69 @@ function showErr(msg) {
   const e = document.getElementById('err'); e.textContent = msg; e.classList.remove('hidden');
 }
 
-/* ══ loadCard (legacy, overridden by index.html patch) ══ */
+/* ══ Internal card loader ══ */
+window._loadCardInternal = async function(summaryPromise) {
+  document.getElementById('out').classList.add('hidden');
+  document.getElementById('err').classList.add('hidden');
+  document.getElementById('emptyState').classList.add('hidden');
+  setLoading(true);
+  try {
+    const data = await summaryPromise;
+    const cats = await fetchCategories(data.title);
+    currentData = data; currentCats = cats;
+    document.getElementById('q').value = data.title || '';
+    document.getElementById('wikiLink').href = data.content_urls?.desktop?.page || '#';
+
+    document.getElementById('ci-name').textContent = (data.title || '').slice(0, 22);
+    document.getElementById('cardInfo').classList.remove('hidden');
+
+    if (currentMode === 'mtg') {
+      const card = buildMTG(data, cats);
+      document.getElementById('ci-cat').textContent = card.category;
+      document.getElementById('ci-color').textContent = 'Couleur ' + card.color;
+      renderMTG(card);
+    } else {
+      const ygo = await buildYGO(data, cats);
+      document.getElementById('ci-cat').textContent = ygo.category;
+      document.getElementById('ci-color').textContent = ygo.attr;
+      renderYGO(ygo);
+    }
+    document.getElementById('out').classList.remove('hidden');
+  } catch(e) {
+    showErr(e.message);
+    document.getElementById('emptyState').classList.remove('hidden');
+  }
+  finally { setLoading(false); }
+};
+
+/* ══ Mode switch ══ */
+window.switchMode = function(mode) {
+  currentMode = mode;
+  document.getElementById('btnMTG').className = 'mode-tab' + (mode === 'mtg' ? ' active' : '');
+  document.getElementById('btnYGO').className = 'mode-tab' + (mode === 'ygo' ? ' active' : '');
+  document.getElementById('view-mtg').classList.toggle('hidden', mode !== 'mtg');
+  document.getElementById('view-ygo').classList.toggle('hidden', mode !== 'ygo');
+  if (currentData) {
+    if (mode === 'mtg') {
+      const card = buildMTG(currentData, currentCats);
+      document.getElementById('ci-color').textContent = 'Couleur ' + card.color;
+      renderMTG(card);
+    } else {
+      buildYGO(currentData, currentCats).then(ygo => {
+        document.getElementById('ci-color').textContent = ygo.attr;
+        renderYGO(ygo);
+      });
+    }
+  }
+};
+
+/* ══ loadCard (compat) ══ */
 async function loadCard(summaryPromise) {
   return window._loadCardInternal ? window._loadCardInternal(summaryPromise) : undefined;
+}
+
+/* ══ loadSuggestion ══ */
+function loadSuggestion(title) {
+  document.getElementById('q').value = title;
+  window._loadCardInternal(fetchWiki(title));
 }
