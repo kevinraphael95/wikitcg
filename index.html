@@ -12,180 +12,324 @@
 </head>
 <body>
 
-<!-- ── Fond ambiant animé ── -->
-<div class="bg-orbs" aria-hidden="true">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-</div>
-<div class="bg-grid" aria-hidden="true"></div>
+<!-- ════ APP SHELL ════ -->
+<div class="app">
 
-<!-- ── Theme toggle ── -->
-<button class="theme-btn" id="themeBtn" aria-label="Changer de thème" title="Changer de thème">
-  <span class="theme-icon">☽</span>
-</button>
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
 
-<!-- ── Header ── -->
-<header class="site-header">
-  <div class="header-eyebrow">
-    <span class="eyebrow-line"></span>
-    <span class="eyebrow-text">W I K I T C G</span>
-    <span class="eyebrow-line"></span>
-  </div>
-  <h1 class="site-title">
-    <span class="title-glow" aria-hidden="true">WikiTCG</span>
-    WikiTCG
-  </h1>
-  <p class="site-sub">Chaque article Wikipédia devient une carte</p>
-</header>
-
-<!-- ── UI de recherche ── -->
-<section class="search-section" aria-label="Recherche d'article">
-  <div class="search-container">
-    <div class="search-field-wrap">
-      <svg class="search-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <path d="M3 9a6 6 0 1 0 12 0A6 6 0 0 0 3 9ZM15.5 15.5l-3.3-3.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <input
-        id="q"
-        type="text"
-        class="search-input"
-        placeholder="Napoléon, Kraken, Tour Eiffel…"
-        autocomplete="off"
-        spellcheck="false"
-        aria-label="Rechercher un article Wikipédia"
-      >
-      <button class="search-clear" id="qClear" aria-label="Effacer" tabindex="-1">
-        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <polygon points="14,2 17,10 26,10 19,15.5 21.5,24 14,19 6.5,24 9,15.5 2,10 11,10" fill="none" stroke="#c8a040" stroke-width="1.4" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-name">WikiTCG</span>
+        <span class="logo-sub">CARD GENERATOR</span>
+      </div>
+      <button class="theme-btn" id="themeBtn" aria-label="Changer de thème">
+        <svg id="icon-moon" width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M17.5 12.5A7.5 7.5 0 1 1 7.5 2.5a5.5 5.5 0 0 0 10 10Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <svg id="icon-sun" width="14" height="14" viewBox="0 0 20 20" fill="none" style="display:none"><circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.93 4.93l1.41 1.41M13.66 13.66l1.41 1.41M4.93 15.07l1.41-1.41M13.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
     </div>
-    <button class="btn-invoke" id="bGen">
-      <span>Invoquer</span>
-      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3l1.6 4.8H17l-4.1 3 1.6 4.8L10 13l-4.5 2.6 1.6-4.8L3 8h5.4L10 3Z" fill="currentColor"/></svg>
-    </button>
-  </div>
-  <div class="btn-row">
-    <button class="btn-ghost btn-daily" id="bDaily">
-      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 2v4M13 2v4M3 8h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      Carte du jour
-    </button>
-    <button class="btn-ghost btn-rand" id="bRand">
-      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2 6h3l2 3-2 3H2M15 4l3 2-3 2M15 12l3 2-3 2M5 6l10 2M5 14l10-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Aléatoire
-    </button>
-  </div>
-</section>
 
-<!-- ── Loader ── -->
-<div id="loader" class="loader hidden" role="status" aria-live="polite">
-  <div class="loader-rune" aria-hidden="true">᛭</div>
-  <div class="loader-dots" aria-hidden="true"><span></span><span></span><span></span></div>
-  <p class="loader-label">Consultation des archives…</p>
-</div>
-
-<!-- ── Erreur ── -->
-<div id="err" class="err-msg hidden" role="alert"></div>
-
-<!-- ── Zone carte ── -->
-<div id="out" class="card-zone hidden">
-
-  <!-- Mode switch -->
-  <div class="mode-switch" role="tablist" aria-label="Format de carte">
-    <button class="mode-tab tab-mtg active" id="btnMTG" role="tab" aria-selected="true" onclick="switchMode('mtg')">
-      <svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 2L11 7h5L12 10.5l2 5L9 13l-5 2.5 2-5L2 7h5L9 2Z" fill="currentColor"/></svg>
-      Magic
-    </button>
-    <button class="mode-tab tab-ygo" id="btnYGO" role="tab" aria-selected="false" onclick="switchMode('ygo')">
-      <svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 1l2.5 6h6.5l-5.3 3.8 2 6.2L9 13.3l-5.7 3.7 2-6.2L.5 7H7L9 1Z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
-      Yu-Gi-Oh!
-    </button>
-  </div>
-
-  <!-- MTG view -->
-  <div id="view-mtg" class="card-view" role="tabpanel" aria-labelledby="btnMTG">
-    <div class="mtg-card" id="mc">
-      <div class="mtg-foil" aria-hidden="true"></div>
-      <!-- Header -->
-      <div class="mtg-header">
-        <span class="mtg-name" id="mc-name"></span>
-        <div class="mtg-mana" id="mc-mana" aria-label="Coût de mana"></div>
+    <!-- Search -->
+    <div class="sidebar-search">
+      <div class="search-label">ARTICLE WIKIPÉDIA</div>
+      <div class="search-field-wrap">
+        <svg class="search-ico" width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M3 9a6 6 0 1 0 12 0A6 6 0 0 0 3 9ZM15.5 15.5l-3.3-3.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input id="q" type="text" class="search-input" placeholder="Napoléon, Kraken, Tour Eiffel…" autocomplete="off" spellcheck="false" aria-label="Rechercher un article Wikipédia">
+        <button class="search-clear" id="qClear" aria-label="Effacer" tabindex="-1">
+          <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
       </div>
-      <!-- Art -->
-      <div class="mtg-art-wrap">
-        <img id="mc-img" src="" alt="" loading="lazy">
-        <div class="mtg-art-ph" id="mc-ph" aria-hidden="true"></div>
-        <div class="mtg-art-shine" aria-hidden="true"></div>
-      </div>
-      <!-- Type line -->
-      <div class="mtg-typeline">
-        <span id="mc-typetxt"></span>
-        <span class="mtg-rarity" id="mc-rarity"></span>
-      </div>
-      <!-- Text box -->
-      <div class="mtg-textbox">
-        <div class="mtg-kw" id="mc-kw"></div>
-        <div class="mtg-ab" id="mc-ab"></div>
-        <div class="mtg-divider" id="mc-div"></div>
-        <div class="mtg-flav" id="mc-flav"></div>
-      </div>
-      <!-- Footer -->
-      <div class="mtg-footer">
-        <span class="mtg-set">WIKITCG • FR</span>
-        <div class="mtg-pt-box" id="mc-pt-box">
-          <span class="mtg-pt" id="mc-pt"></span>
-        </div>
+      <button class="btn-invoke" id="bGen">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3l1.6 4.8H17l-4.1 3 1.6 4.8L10 13l-4.5 2.6 1.6-4.8L3 8h5.4L10 3Z" fill="currentColor"/></svg>
+        <span>INVOQUER</span>
+      </button>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="sidebar-actions">
+      <div class="actions-label">ACCÈS RAPIDE</div>
+      <div class="action-grid">
+        <button class="btn-action" id="bDaily">
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 2v4M13 2v4M3 8h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Carte du jour
+        </button>
+        <button class="btn-action" id="bRand">
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="12" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="2" y="12" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="12" y="12" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="5" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="5" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/></svg>
+          Aléatoire
+        </button>
       </div>
     </div>
-  </div>
 
-  <!-- YGO view -->
-  <div id="view-ygo" class="card-view hidden" role="tabpanel" aria-labelledby="btnYGO">
-    <div class="ygo-card" id="yc">
-      <!-- Header -->
-      <div class="ygo-header">
-        <span class="ygo-name" id="yc-name"></span>
-        <div class="ygo-attr" id="yc-attr" aria-label="Attribut"></div>
-      </div>
-      <!-- Level row -->
-      <div class="ygo-level-row" id="yc-level-row">
-        <div class="ygo-stars" id="yc-stars" aria-label="Niveau"></div>
-      </div>
-      <!-- Art -->
-      <div class="ygo-art-frame">
-        <div class="ygo-art-inner">
-          <img id="yc-img" src="" alt="" loading="lazy">
-          <div class="ygo-art-ph" id="yc-ph" aria-hidden="true"></div>
-        </div>
-      </div>
-      <!-- Type -->
-      <div class="ygo-typebar">
-        <span id="yc-subtype"></span>
-      </div>
-      <!-- Textbox -->
-      <div class="ygo-textbox">
-        <div class="ygo-bracket" id="yc-bracket"></div>
-        <div class="ygo-eff" id="yc-eff"></div>
-        <div class="ygo-flav" id="yc-flav"></div>
-      </div>
-      <!-- Stats -->
-      <div class="ygo-stats" id="yc-stats" aria-label="Statistiques"></div>
-      <!-- Footer -->
-      <div class="ygo-footer">
-        <div class="ygo-holo" aria-hidden="true"></div>
-        <span class="ygo-serial" id="yc-serial"></span>
-        <span class="ygo-copy" aria-hidden="true">©WIKITCG</span>
+    <!-- Card mode -->
+    <div class="sidebar-mode">
+      <div class="actions-label">FORMAT</div>
+      <div class="mode-tabs">
+        <button class="mode-tab active" id="btnMTG" onclick="switchMode('mtg')">
+          <svg width="11" height="11" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 2L11 7h5L12 10.5l2 5L9 13l-5 2.5 2-5L2 7h5L9 2Z" fill="currentColor"/></svg>
+          Magic
+        </button>
+        <button class="mode-tab" id="btnYGO" onclick="switchMode('ygo')">
+          <svg width="11" height="11" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 1l2.5 6h6.5l-5.3 3.8 2 6.2L9 13.3l-5.7 3.7 2-6.2L.5 7H7L9 1Z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+          Yu-Gi-Oh!
+        </button>
       </div>
     </div>
-  </div>
 
-  <!-- Wiki link -->
-  <a class="wiki-link" id="wikiLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Lire l'article Wikipédia">
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3M10 2h4v4M14 2L8 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Lire l'article Wikipédia
-  </a>
+    <!-- Card info (shown after load) -->
+    <div class="sidebar-cardinfo hidden" id="cardInfo">
+      <div class="actions-label">CARTE ACTIVE</div>
+      <div class="cardinfo-body">
+        <div class="cardinfo-name" id="ci-name">—</div>
+        <div class="cardinfo-meta">
+          <span class="ci-tag" id="ci-cat">—</span>
+          <span class="ci-tag" id="ci-color">—</span>
+        </div>
+        <a class="wiki-link" id="wikiLink" href="#" target="_blank" rel="noopener noreferrer">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3M10 2h4v4M14 2L8 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Lire sur Wikipédia
+        </a>
+      </div>
+    </div>
 
-</div><!-- /card-zone -->
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <span class="footer-txt">fr.wikipedia.org</span>
+      <span class="footer-dot">·</span>
+      <span class="footer-txt">ygoprodeck.com</span>
+    </div>
+
+  </aside>
+
+  <!-- ── STAGE ── -->
+  <main class="stage">
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-star" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <polygon points="24,4 28.5,17.5 43,17.5 31.5,26.5 36,40 24,31.5 12,40 16.5,26.5 5,17.5 19.5,17.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="empty-title">Invoquez votre première carte</p>
+      <p class="empty-sub">Entrez n'importe quel article Wikipédia<br>ou lancez le dé pour une surprise.</p>
+      <div class="empty-suggestions">
+        <button class="sug-btn" onclick="loadSuggestion('Napoléon Ier')">Napoléon Ier</button>
+        <button class="sug-btn" onclick="loadSuggestion('Pieuvre')">Pieuvre</button>
+        <button class="sug-btn" onclick="loadSuggestion('Tour Eiffel')">Tour Eiffel</button>
+        <button class="sug-btn" onclick="loadSuggestion('Trou noir')">Trou noir</button>
+      </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader" class="loader hidden" role="status" aria-live="polite">
+      <div class="loader-icon" aria-hidden="true">
+        <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
+          <polygon points="24,4 28.5,17.5 43,17.5 31.5,26.5 36,40 24,31.5 12,40 16.5,26.5 5,17.5 19.5,17.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="loader-label">Consultation des archives…</p>
+    </div>
+
+    <!-- Error -->
+    <div id="err" class="err-msg hidden" role="alert"></div>
+
+    <!-- Card output -->
+    <div id="out" class="card-out hidden">
+
+      <!-- MTG view -->
+      <div id="view-mtg" class="card-view" role="tabpanel">
+        <div class="mtg-card" id="mc">
+          <div class="mtg-foil" aria-hidden="true"></div>
+          <div class="mtg-header">
+            <span class="mtg-name" id="mc-name"></span>
+            <div class="mtg-mana" id="mc-mana" aria-label="Coût de mana"></div>
+          </div>
+          <div class="mtg-art-wrap">
+            <img id="mc-img" src="" alt="" loading="lazy">
+            <div class="mtg-art-ph" id="mc-ph" aria-hidden="true"></div>
+            <div class="mtg-art-shine" aria-hidden="true"></div>
+          </div>
+          <div class="mtg-typeline">
+            <span id="mc-typetxt"></span>
+            <span class="mtg-rarity" id="mc-rarity"></span>
+          </div>
+          <div class="mtg-textbox">
+            <div class="mtg-kw" id="mc-kw"></div>
+            <div class="mtg-ab" id="mc-ab"></div>
+            <div class="mtg-divider" id="mc-div"></div>
+            <div class="mtg-flav" id="mc-flav"></div>
+          </div>
+          <div class="mtg-footer">
+            <span class="mtg-set">WIKITCG • FR</span>
+            <div class="mtg-pt-box" id="mc-pt-box">
+              <span class="mtg-pt" id="mc-pt"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- YGO view -->
+      <div id="view-ygo" class="card-view hidden" role="tabpanel">
+        <div class="ygo-card" id="yc">
+          <div class="ygo-header">
+            <span class="ygo-name" id="yc-name"></span>
+            <div class="ygo-attr" id="yc-attr" aria-label="Attribut"></div>
+          </div>
+          <div class="ygo-level-row" id="yc-level-row">
+            <div class="ygo-stars" id="yc-stars" aria-label="Niveau"></div>
+          </div>
+          <div class="ygo-art-frame">
+            <div class="ygo-art-inner">
+              <img id="yc-img" src="" alt="" loading="lazy">
+              <div class="ygo-art-ph" id="yc-ph" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div class="ygo-typebar"><span id="yc-subtype"></span></div>
+          <div class="ygo-textbox">
+            <div class="ygo-bracket" id="yc-bracket"></div>
+            <div class="ygo-eff" id="yc-eff"></div>
+            <div class="ygo-flav" id="yc-flav"></div>
+          </div>
+          <div class="ygo-stats" id="yc-stats"></div>
+          <div class="ygo-footer">
+            <div class="ygo-holo" aria-hidden="true"></div>
+            <span class="ygo-serial" id="yc-serial"></span>
+            <span class="ygo-copy" aria-hidden="true">©WIKITCG</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /card-out -->
+
+  </main>
+
+</div><!-- /app -->
 
 <script src="app.js"></script>
+<script>
+// Patch: hide empty state on load, update sidebar card info
+const _origLoadCard = loadCard;
+function loadCard(p) {
+  document.getElementById('emptyState').classList.add('hidden');
+  return _origLoadCard(p).then ? _origLoadCard(p) : undefined;
+}
+
+function loadSuggestion(title) {
+  document.getElementById('q').value = title;
+  document.getElementById('emptyState').classList.add('hidden');
+  window._loadCardInternal(fetchWiki(title));
+}
+
+// expose internal loader
+window._loadCardInternal = async function(summaryPromise) {
+  document.getElementById('out').classList.add('hidden');
+  document.getElementById('err').classList.add('hidden');
+  document.getElementById('emptyState').classList.add('hidden');
+  setLoading(true);
+  try {
+    const data = await summaryPromise;
+    const cats = await fetchCategories(data.title);
+    currentData = data; currentCats = cats;
+    document.getElementById('q').value = data.title || '';
+    document.getElementById('wikiLink').href = data.content_urls?.desktop?.page || '#';
+
+    // Update sidebar info
+    document.getElementById('ci-name').textContent = (data.title || '').slice(0, 22);
+    document.getElementById('cardInfo').classList.remove('hidden');
+
+    if (currentMode === 'mtg') {
+      const card = buildMTG(data, cats);
+      document.getElementById('ci-cat').textContent = card.category;
+      document.getElementById('ci-color').textContent = 'Couleur ' + card.color;
+      renderMTG(card);
+    } else {
+      const ygo = await buildYGO(data, cats);
+      document.getElementById('ci-cat').textContent = ygo.category;
+      document.getElementById('ci-color').textContent = ygo.attr;
+      renderYGO(ygo);
+    }
+    document.getElementById('out').classList.remove('hidden');
+  } catch(e) {
+    showErr(e.message);
+    document.getElementById('emptyState').classList.remove('hidden');
+  }
+  finally { setLoading(false); }
+};
+
+// Patch mode switch to update sidebar info
+const _origSwitchMode = switchMode;
+window.switchMode = function(mode) {
+  currentMode = mode;
+  document.getElementById('btnMTG').className = 'mode-tab' + (mode === 'mtg' ? ' active' : '');
+  document.getElementById('btnYGO').className = 'mode-tab' + (mode === 'ygo' ? ' active' : '');
+  document.getElementById('view-mtg').classList.toggle('hidden', mode !== 'mtg');
+  document.getElementById('view-ygo').classList.toggle('hidden', mode !== 'ygo');
+  if (currentData) {
+    if (mode === 'mtg') {
+      const card = buildMTG(currentData, currentCats);
+      document.getElementById('ci-color').textContent = 'Couleur ' + card.color;
+      renderMTG(card);
+    } else {
+      buildYGO(currentData, currentCats).then(ygo => {
+        document.getElementById('ci-color').textContent = ygo.attr;
+        renderYGO(ygo);
+      });
+    }
+  }
+};
+
+// Wire buttons to internal loader
+document.getElementById('bGen').addEventListener('click', () => {
+  const q = document.getElementById('q').value.trim();
+  if (q) window._loadCardInternal(fetchWiki(q));
+});
+document.getElementById('bRand').addEventListener('click', () => window._loadCardInternal(fetchRandom()));
+document.getElementById('bDaily').addEventListener('click', async () => {
+  const today = new Date();
+  const seed = today.getFullYear() * 10000 + (today.getMonth()+1) * 100 + today.getDate();
+  const cached = localStorage.getItem('wikitcg-daily-date');
+  const cachedTitle = localStorage.getItem('wikitcg-daily-title');
+  if (cached === String(seed) && cachedTitle) { window._loadCardInternal(fetchWiki(cachedTitle)); return; }
+  document.getElementById('emptyState').classList.add('hidden');
+  setLoading(true);
+  try {
+    const data = await fetchRandom();
+    localStorage.setItem('wikitcg-daily-date', String(seed));
+    localStorage.setItem('wikitcg-daily-title', data.title);
+    window._loadCardInternal(Promise.resolve(data));
+  } catch(e) { showErr(e.message); setLoading(false); }
+});
+document.getElementById('q').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { const q = document.getElementById('q').value.trim(); if (q) window._loadCardInternal(fetchWiki(q)); }
+});
+
+// Search clear button
+const qInput = document.getElementById('q');
+const qClear = document.getElementById('qClear');
+qClear.addEventListener('click', () => { qInput.value = ''; qInput.focus(); });
+
+// Theme
+const themeBtn = document.getElementById('themeBtn');
+const iconMoon = document.getElementById('icon-moon');
+const iconSun  = document.getElementById('icon-sun');
+const saved = localStorage.getItem('wikitcg-theme') || 'dark';
+document.documentElement.setAttribute('data-theme', saved);
+if (saved === 'light') { iconMoon.style.display='none'; iconSun.style.display=''; }
+themeBtn.addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('wikitcg-theme', next);
+  iconMoon.style.display = next === 'dark' ? '' : 'none';
+  iconSun.style.display  = next === 'light' ? '' : 'none';
+});
+</script>
 </body>
 </html>
